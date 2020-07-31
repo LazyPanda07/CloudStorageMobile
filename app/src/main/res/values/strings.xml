@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">CloudStorageMobile</string>
+
+    <!--String constants for AuthorizationActivity -->
+    <string name="authorization_title">Авторизация</string>
+
+    <string name="authorization_login">Логин</string>
+    <string name="authorization_password">Пароль</string>
+    <string name="authorization_enter">Вход</string>
+    <string name="to_registration_activity">Регистрация</string>
+
+    <!--String constants for RegistrationActivity -->
+    <string name="registration_title">Регистрация</string>
+
+    <string name="registration_login">Логин</string>
+    <string name="registration_password">Пароль</string>
+    <string name="registration">Зарегистрироваться</string>
+    <string name="to_authorization_activity">Авторизация</string>
+
+    <!--String constants for CloudStorageActivity -->
+    <string name="cloud_storage_title">CloudStorage</string>
+
+
+
 </resources>
