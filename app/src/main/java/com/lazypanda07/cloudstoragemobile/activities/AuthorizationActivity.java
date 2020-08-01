@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -37,8 +38,16 @@ public class AuthorizationActivity extends AppCompatActivity
 						{
 							Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 
-							String body = "login=" + ((EditText) findViewById(R.id.authorization_login)).getText().toString() +
-									"&password=" + ((EditText) findViewById(R.id.authorization_password)).getText().toString();
+							String login = ((EditText) findViewById(R.id.authorization_login)).getText().toString();
+							String password = ((EditText) findViewById(R.id.authorization_password)).getText().toString();
+
+							if (login.isEmpty() || password.isEmpty())
+							{
+								network.close();
+								return;
+							}
+
+							String body = "login=" + login + "&password=" + password;
 
 							String request = (new HTTP.HTTPBuilder()).setMethod("POST").
 									setHeaders("Account request", "Authorization").
@@ -51,7 +60,7 @@ public class AuthorizationActivity extends AppCompatActivity
 
 							String response = new String(network.receiveBytes());
 
-							HTTP.HTTPParser parser = new HTTP.HTTPParser(response.getBytes());
+							final HTTP.HTTPParser parser = new HTTP.HTTPParser(response.getBytes());
 
 							if (parser.getHeaders().get("Error").equals("0"))
 							{
@@ -61,7 +70,14 @@ public class AuthorizationActivity extends AppCompatActivity
 							}
 							else
 							{
-								//TODO: error handling
+								runOnUiThread(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										Toast.makeText(getApplicationContext(), parser.getBody(), Toast.LENGTH_LONG).show();
+									}
+								});
 							}
 						}
 						catch (IOException e)
