@@ -50,8 +50,8 @@ public class AuthorizationActivity extends AppCompatActivity
 							String body = "login=" + login + "&password=" + password;
 
 							String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-									setHeaders("Account request", "Authorization").
-									setHeaders("Content-Length", "25").
+									setHeaders(Constants.RequestType.accountType, Constants.AccountRequests.authorization).
+									setHeaders("Content-Length", String.valueOf(body.length())).
 									build(body.getBytes());
 
 							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);

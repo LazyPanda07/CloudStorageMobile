@@ -9,11 +9,15 @@ import java.util.HashMap;
 
 public class Network
 {
+    public static final int clientTimeoutReceive = 30000;	//30 seconds
+    
     private Socket socket;
 
     public Network(String ip, int port) throws IOException
     {
         socket = new Socket(ip, port);
+
+        socket.setSoTimeout(clientTimeoutReceive);
     }
 
     public void sendBytes(byte[] bytes) throws IOException
