@@ -4,6 +4,7 @@ import com.lazypanda07.networklib.HTTP.HTTPParser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 
@@ -13,7 +14,9 @@ public class Network
 
 	public Network(String ip, int port) throws IOException
 	{
-		socket = new Socket(ip, port);
+		socket = new Socket();
+
+		socket.connect(new InetSocketAddress(ip, port), Constants.clientTimeoutReceive);
 
 		socket.setSoTimeout(Constants.clientTimeoutReceive);
 	}

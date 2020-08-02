@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CloudStorageMobile</string>
 
-    <!--String constants for AuthorizationActivity -->
+    <!-- String constants for AuthorizationActivity -->
     <string name="authorization_title">Авторизация</string>
 
     <string name="authorization_login">Логин</string>
@@ -9,7 +9,7 @@
     <string name="authorization_enter">Вход</string>
     <string name="to_registration_activity">Регистрация</string>
 
-    <!--String constants for RegistrationActivity -->
+    <!-- String constants for RegistrationActivity -->
     <string name="registration_title">Регистрация</string>
 
     <string name="registration_login">Логин</string>
@@ -18,8 +18,15 @@
     <string name="registration">Зарегистрироваться</string>
     <string name="to_authorization_activity">Авторизация</string>
 
-    <!--String constants for CloudStorageActivity -->
+    <!-- String constants for CloudStorageActivity -->
     <string name="cloud_storage_title">CloudStorage</string>
 
+
+    <!-- String constants for errors -->
+    <string name="empty_login">Логин не может быть пустым</string>
+    <string name="empty_password">Пароль не может быть пустым</string>
+    <string name="password_mismatch">Пароли не совпадают</string>
+
+    <string name="connection_error">Не удалось подключиться к серверу</string>
 
 </resources>

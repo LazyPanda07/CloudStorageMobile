@@ -2,7 +2,6 @@ package com.lazypanda07.cloudstoragemobile;
 
 import android.content.Intent;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,8 +28,15 @@ public class NetworkFunctions
 					String login = ((EditText) activity.findViewById(R.id.authorization_login)).getText().toString();
 					String password = ((EditText) activity.findViewById(R.id.authorization_password)).getText().toString();
 
-					if (login.isEmpty() || password.isEmpty())
+					if (login.isEmpty())
 					{
+						ErrorHandling.showError(activity, R.string.empty_login);
+						network.close();
+						return;
+					}
+					else if (password.isEmpty())
+					{
+						ErrorHandling.showError(activity, R.string.empty_password);
 						network.close();
 						return;
 					}
@@ -60,18 +66,12 @@ public class NetworkFunctions
 					{
 						network.close();
 
-						activity.runOnUiThread(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								Toast.makeText(activity.getApplicationContext(), parser.getBody(), Toast.LENGTH_LONG).show();
-							}
-						});
+						ErrorHandling.showError(activity, parser.getBody());
 					}
 				}
 				catch (IOException e)
 				{
+					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
 			}
@@ -93,8 +93,21 @@ public class NetworkFunctions
 					String password = ((EditText) activity.findViewById(R.id.registration_password)).getText().toString();
 					String repeatPassword = ((EditText) activity.findViewById(R.id.registration_repeat_password)).getText().toString();
 
-					if (login.isEmpty() || password.isEmpty() || !password.equals(repeatPassword))
+					if (login.isEmpty())
 					{
+						ErrorHandling.showError(activity, R.string.empty_login);
+						network.close();
+						return;
+					}
+					else if (password.isEmpty())
+					{
+						ErrorHandling.showError(activity, R.string.empty_password);
+						network.close();
+						return;
+					}
+					else if (!password.equals(repeatPassword))
+					{
+						ErrorHandling.showError(activity, R.string.password_mismatch);
 						network.close();
 						return;
 					}
@@ -130,18 +143,12 @@ public class NetworkFunctions
 					{
 						network.close();
 
-						activity.runOnUiThread(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								Toast.makeText(activity.getApplicationContext(), parser.getBody(), Toast.LENGTH_LONG).show();
-							}
-						});
+						ErrorHandling.showError(activity, parser.getBody());
 					}
 				}
 				catch (IOException e)
 				{
+					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
 			}
