@@ -25,7 +25,7 @@ public class AuthorizationActivity extends AppCompatActivity
 		NetworkFunctions.authorization(ref);
 	}
 
-	public void toRegistrationScreen(View view)
+	public void toRegistrationActivity(View view)
 	{
 		Intent intent = new Intent(ref, RegistrationActivity.class);
 

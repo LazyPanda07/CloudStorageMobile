@@ -14,12 +14,12 @@
 
     <string name="registration_login">Логин</string>
     <string name="registration_password">Пароль</string>
+    <string name="registration_repeat_password">Повторите пароль</string>
     <string name="registration">Зарегистрироваться</string>
     <string name="to_authorization_activity">Авторизация</string>
 
     <!--String constants for CloudStorageActivity -->
     <string name="cloud_storage_title">CloudStorage</string>
-
 
 
 </resources>

@@ -47,6 +47,20 @@
         android:selectAllOnFocus="true"
         android:textSize="@dimen/textInput" />
 
+    <EditText
+        android:id="@+id/registration_repeat_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:autofillHints="@string/registration_repeat_password"
+        android:hint="@string/registration_repeat_password"
+        android:inputType="textPassword"
+        android:selectAllOnFocus="true"
+        android:textSize="@dimen/textInput" />
+
     <LinearLayout
         style="?android:attr/buttonBarButtonStyle"
         android:layout_width="match_parent"
@@ -55,21 +69,21 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/registration_enter"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
+            android:onClick="registration"
             android:text="@string/registration"
             android:textAllCaps="false"
             android:textSize="@dimen/buttons" />
 
         <Button
-            android:id="@+id/to_registration_activity"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
+            android:onClick="toAuthorizationActivity"
             android:text="@string/to_authorization_activity"
             android:textAllCaps="false"
             android:textSize="@dimen/buttons" />
