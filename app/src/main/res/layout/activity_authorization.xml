@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.AuthorizationActivity">
+    tools:context=".Activities.AuthorizationActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -55,21 +55,21 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/authorization_enter"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
+            android:onClick="authorization"
             android:text="@string/authorization_enter"
             android:textAllCaps="false"
             android:textSize="@dimen/buttons" />
 
         <Button
-            android:id="@+id/to_registration_activity"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
+            android:onClick="toRegistrationScreen"
             android:text="@string/to_registration_activity"
             android:textAllCaps="false"
             android:textSize="@dimen/buttons" />

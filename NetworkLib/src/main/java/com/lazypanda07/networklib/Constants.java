@@ -1,4 +1,4 @@
-package com.lazypanda07.cloudstoragemobile;
+package com.lazypanda07.networklib;
 
 public class Constants
 {
@@ -7,6 +7,8 @@ public class Constants
 
 	public static final short HTTPPacketSize = 4096;
 	public static final int filePacketSize = 10 * 1024 * 1024;    //10 MB
+
+	public static final int clientTimeoutReceive = 30000;    //30 seconds
 
 	public static final String dataDelimiter = "/";
 	public static final String dataPartDelimiter = "|";

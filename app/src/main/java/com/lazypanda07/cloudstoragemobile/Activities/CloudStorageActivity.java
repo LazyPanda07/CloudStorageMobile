@@ -1,4 +1,4 @@
-package com.lazypanda07.cloudstoragemobile.activities;
+package com.lazypanda07.cloudstoragemobile.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
