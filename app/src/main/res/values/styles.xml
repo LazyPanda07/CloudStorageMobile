@@ -7,12 +7,4 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <dimen name="pageTitles">20sp</dimen>
-    <dimen name="paragraphText">14sp</dimen>
-    <dimen name="listTitles">14sp</dimen>
-    <dimen name="listItemTitles">16sp</dimen>
-    <dimen name="secondaryText">14sp</dimen>
-    <dimen name="buttons">14sp</dimen>
-    <dimen name="textInput">16sp</dimen>
-
 </resources>

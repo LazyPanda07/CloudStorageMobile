@@ -87,3 +87,5 @@ lint/tmp/
 # Data bases
 *.sqlite*
 *.db
+
+Data/

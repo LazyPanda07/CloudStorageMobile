@@ -20,6 +20,8 @@
 
     <!-- String constants for CloudStorageActivity -->
     <string name="cloud_storage_title">CloudStorage</string>
+    <string name="cloud_storage_name_type_title">Имя/Тип</string>
+    <string name="cloud_storage_size_title">Размер</string>
 
 
     <!-- String constants for errors -->
