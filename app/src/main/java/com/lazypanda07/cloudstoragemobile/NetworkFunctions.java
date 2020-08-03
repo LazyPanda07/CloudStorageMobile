@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class NetworkFunctions
 {
-	private static boolean authorization(Network network, String login, String password)
+	private static boolean authorization(@org.jetbrains.annotations.NotNull Network network, String login, String password)
 	{
 		String body = "login=" + login + "&password=" + password;
 
@@ -83,9 +83,7 @@ public class NetworkFunctions
 
 					network.sendBytes(request.getBytes());
 
-					String response = new String(network.receiveBytes());
-
-					final HTTP.HTTPParser parser = new HTTP.HTTPParser(response.getBytes());
+					final HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
 
 					if (parser.getHeaders().get("Error").equals("0"))
 					{
@@ -159,9 +157,7 @@ public class NetworkFunctions
 
 					network.sendBytes(request.getBytes());
 
-					String response = new String(network.receiveBytes());
-
-					final HTTP.HTTPParser parser = new HTTP.HTTPParser(response.getBytes());
+					final HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
 
 					if (parser.getHeaders().get("Error").equals("0"))
 					{
@@ -215,12 +211,11 @@ public class NetworkFunctions
 
 						network.sendBytes(request.getBytes());
 
-						String response = new String(network.receiveBytes());
-						HTTP.HTTPParser parser = new HTTP.HTTPParser(response.getBytes());
+						HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
 
 						if (parser.getHeaders().get("Error").equals("0"))
 						{
-							String body = parser.getBody();
+							String body = new String(parser.getBody(), "CP1251");
 							StringBuilder[] temData = new StringBuilder[6];    //each index equals member position in FileData class
 							int curIndex = 0;
 

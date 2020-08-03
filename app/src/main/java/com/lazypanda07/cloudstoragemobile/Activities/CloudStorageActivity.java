@@ -22,7 +22,6 @@ public class CloudStorageActivity extends AppCompatActivity
 	private String login;
 	private String password;
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{

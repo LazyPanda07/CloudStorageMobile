@@ -15,7 +15,7 @@ public class HTTP
 		private int responseCode;
 		private String responseMessage;
 		private HashMap<String, String> headers;
-		private String body;
+		private byte[] body;
 
 		public HTTPParser(byte[] data)
 		{
@@ -127,7 +127,7 @@ public class HTTP
 
 			String[] array = HTTPHeaders.split("\r\n");
 
-			for (String i : array)
+			for (String i: array)
 			{
 				String[] tem = i.split(": ");
 
@@ -139,8 +139,14 @@ public class HTTP
 			if (length != null)
 			{
 				int bodyStart = HTTPMessage.indexOf("\r\n\r\n") + 4;
+				int bodyLength = Integer.parseInt(length);
 
-				body = HTTPMessage.substring(bodyStart, HTTPMessage.length() - 1);
+				body = new byte[bodyLength];
+
+				for (int i = 0, j = bodyStart; i < bodyLength; i++, j++)
+				{
+					body[i] = data[j];
+				}
 			}
 		}
 
@@ -174,7 +180,7 @@ public class HTTP
 			return headers;
 		}
 
-		public String getBody()
+		public byte[] getBody()
 		{
 			return body;
 		}

@@ -28,6 +28,7 @@
     <string name="empty_login">Логин не может быть пустым</string>
     <string name="empty_password">Пароль не может быть пустым</string>
     <string name="password_mismatch">Пароли не совпадают</string>
+    <string name="cast_error">Не удалось отобразить ошибку</string>
 
     <string name="connection_error">Не удалось подключиться к серверу</string>
 

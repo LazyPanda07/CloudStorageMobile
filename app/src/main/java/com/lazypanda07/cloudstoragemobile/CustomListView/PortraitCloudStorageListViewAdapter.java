@@ -53,8 +53,16 @@ public class PortraitCloudStorageListViewAdapter extends BaseAdapter
 		TextView name = result.findViewById(R.id.name);
 		TextView type = result.findViewById(R.id.type);
 		TextView size = result.findViewById(R.id.size);
+		String textSize;
 
-		String textSize = data.get(i).fileSize + " Б";
+		if (data.get(i).fileExtension.equals("Папка с файлами"))
+		{
+			textSize = "";
+		}
+		else
+		{
+			textSize = data.get(i).fileSize + " Б";
+		}
 
 		name.setText(data.get(i).fileName);
 		type.setText(data.get(i).fileExtension);
