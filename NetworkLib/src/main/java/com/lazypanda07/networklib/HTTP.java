@@ -1,5 +1,7 @@
 package com.lazypanda07.networklib;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HTTP
@@ -15,7 +17,7 @@ public class HTTP
 		private int responseCode;
 		private String responseMessage;
 		private HashMap<String, String> headers;
-		private byte[] body;
+		private ArrayList<Byte> body;
 
 		public HTTPParser(byte[] data)
 		{
@@ -23,6 +25,8 @@ public class HTTP
 			StringBuilder builder = new StringBuilder();
 			String HTTPMessage = new String(data);
 			method = "";
+			body = new ArrayList<>();
+			String HTTPHeaders = "";
 
 			int firstStringEnd = HTTPMessage.indexOf("\r\n") + 2;
 			String firstString = HTTPMessage.substring(0, firstStringEnd);
@@ -122,8 +126,21 @@ public class HTTP
 				parameters = firstString.substring(firstString.indexOf("/"), firstString.indexOf(" ", firstString.indexOf("/")));
 			}
 
+			if (HTTPMessage.contains("Content-Length"))
+			{
+				int bodyStart = HTTPMessage.indexOf("\r\n\r\n") + 4;
 
-			String HTTPHeaders = HTTPMessage.substring(firstStringEnd, HTTPMessage.lastIndexOf("\r\n") + 2);
+				for (int i = bodyStart; i < data.length; i++)
+				{
+					body.add(data[i]);
+				}
+
+				HTTPHeaders = HTTPMessage.substring(firstStringEnd, HTTPMessage.indexOf("\r\n\r\n") + 4);
+			}
+			else
+			{
+				HTTPHeaders = HTTPMessage.substring(firstStringEnd, HTTPMessage.lastIndexOf("\r\n") + 2);
+			}
 
 			String[] array = HTTPHeaders.split("\r\n");
 
@@ -132,21 +149,6 @@ public class HTTP
 				String[] tem = i.split(": ");
 
 				headers.put(tem[0], tem[1]);
-			}
-
-			String length = headers.get("Content-Length");
-
-			if (length != null)
-			{
-				int bodyStart = HTTPMessage.indexOf("\r\n\r\n") + 4;
-				int bodyLength = Integer.parseInt(length);
-
-				body = new byte[bodyLength];
-
-				for (int i = 0, j = bodyStart; i < bodyLength; i++, j++)
-				{
-					body[i] = data[j];
-				}
 			}
 		}
 
@@ -182,7 +184,14 @@ public class HTTP
 
 		public byte[] getBody()
 		{
-			return body;
+			byte[] result = new byte[body.size()];
+
+			for (int i = 0; i < body.size(); i++)
+			{
+				result[i] = body.get(i);
+			}
+
+			return result;
 		}
 	}
 
@@ -249,7 +258,14 @@ public class HTTP
 
 		public HTTPBuilder setHeaders(String name, String value)
 		{
-			headers += name + ": " + value + "\r\n";
+			try
+			{
+				headers += name + ": " + new String(value.getBytes(), "CP1251") + "\r\n";
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				e.printStackTrace();
+			}
 
 			return this;
 		}

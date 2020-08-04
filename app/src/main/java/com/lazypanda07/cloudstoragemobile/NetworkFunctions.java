@@ -1,7 +1,9 @@
 package com.lazypanda07.cloudstoragemobile;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,17 +14,27 @@ import com.lazypanda07.networklib.Constants;
 import com.lazypanda07.networklib.HTTP;
 import com.lazypanda07.networklib.Network;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class NetworkFunctions
 {
+	public enum Storage
+	{
+		INTERNAL,
+		SDCard
+	}
+
+	public static Storage storageType = Storage.INTERNAL;
+
 	private static boolean authorization(@org.jetbrains.annotations.NotNull Network network, String login, String password)
 	{
 		String body = "login=" + login + "&password=" + password;
 
 		String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-				setHeaders(Constants.RequestType.accountType, Constants.AccountRequests.authorization).
+				setHeaders(Constants.RequestType.ACCOUNT_TYPE, Constants.AccountRequests.AUTHORIZATION).
 				setHeaders("Content-Length", String.valueOf(body.length())).
 				build(body.getBytes());
 
@@ -32,9 +44,7 @@ public class NetworkFunctions
 		{
 			network.sendBytes(request.getBytes());
 
-			String response = new String(network.receiveBytes());
-
-			final HTTP.HTTPParser parser = new HTTP.HTTPParser(response.getBytes());
+			final HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
 
 			return parser.getHeaders().get("Error").equals("0");
 		}
@@ -75,7 +85,7 @@ public class NetworkFunctions
 					String body = "login=" + login + "&password=" + password;
 
 					String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-							setHeaders(Constants.RequestType.accountType, Constants.AccountRequests.authorization).
+							setHeaders(Constants.RequestType.ACCOUNT_TYPE, Constants.AccountRequests.AUTHORIZATION).
 							setHeaders("Content-Length", String.valueOf(body.length())).
 							build(body.getBytes());
 
@@ -149,7 +159,7 @@ public class NetworkFunctions
 					String body = "login=" + login + "&password=" + password;
 
 					String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-							setHeaders(Constants.RequestType.accountType, Constants.AccountRequests.registration).
+							setHeaders(Constants.RequestType.ACCOUNT_TYPE, Constants.AccountRequests.REGISTRATION).
 							setHeaders("Content-Length", String.valueOf(body.length())).
 							build(body.getBytes());
 
@@ -204,7 +214,7 @@ public class NetworkFunctions
 					if (authorization(network, login, password))
 					{
 						String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-								setHeaders(Constants.RequestType.filesType, Constants.FilesRequests.showAllFilesInFolder).
+								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.SHOW_ALL_FILES_IN_DIRECTORY).
 								build();
 
 						request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
@@ -226,7 +236,7 @@ public class NetworkFunctions
 
 							for (int i = 0; i < body.length(); i++)
 							{
-								if (body.charAt(i) == Constants.dataDelimiter.charAt(0))
+								if (body.charAt(i) == Constants.DATA_DELIMITER.charAt(0))
 								{
 									FileData tem = new FileData
 											(
@@ -247,7 +257,7 @@ public class NetworkFunctions
 										j.setLength(0);
 									}
 								}
-								else if (body.charAt(i) == Constants.dataPartDelimiter.charAt(0))
+								else if (body.charAt(i) == Constants.DATA_PART_DELIMITER.charAt(0))
 								{
 									curIndex++;
 								}
@@ -265,17 +275,103 @@ public class NetworkFunctions
 									adapter.notifyDataSetChanged();
 								}
 							});
+
 						}
 						else
 						{
 							ErrorHandling.showError(activity, parser.getBody());
 						}
+						network.close();
 					}
 				}
 				catch (IOException e)
 				{
 					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+
+	public static void downloadFile(final AppCompatActivity activity, final String fileName, final long fileSize, final String login, final String password)
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				File storage = activity.getApplicationContext().getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS)[storageType.ordinal()];
+				storage = new File(storage, fileName);
+				long totalFileSize = 0;
+
+				try
+				{
+					boolean isCreated = storage.createNewFile();
+
+					if (isCreated | storage.exists())
+					{
+						Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
+						long offset = 0;
+						FileOutputStream out = new FileOutputStream(storage);
+
+						if (authorization(network, login, password))
+						{
+							while (true)
+							{
+								String request = (new HTTP.HTTPBuilder()).setMethod("POST").
+										setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.DOWNLOAD_FILE).
+										setHeaders("File-Name", fileName).
+										setHeaders("Range", String.valueOf(offset)).
+										build();
+
+								request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+								network.sendBytes(request.getBytes("CP1251"));
+
+								HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+								String checkTotalFileSize = parser.getHeaders().get("Total-File-Size");
+
+								out.write(parser.getBody());
+
+								offset += parser.getBody().length;
+
+								if (checkTotalFileSize != null)
+								{
+									totalFileSize = Long.parseLong(checkTotalFileSize);
+									break;
+								}
+							}
+						}
+
+						network.close();
+					}
+					else
+					{
+						ErrorHandling.showError(activity, R.string.cant_create_file);
+					}
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+
+				if (totalFileSize != fileSize)
+				{
+					ErrorHandling.showError(activity, R.string.send_not_full_data);
+				}
+				else
+				{
+					activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							String success = fileName + "\r\n" + "Файл успешно скачан";
+
+							Toast.makeText(activity.getApplicationContext(), success, Toast.LENGTH_SHORT).show();
+						}
+					});
 				}
 			}
 		}).start();

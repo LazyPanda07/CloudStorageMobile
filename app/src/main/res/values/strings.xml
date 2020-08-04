@@ -23,13 +23,13 @@
     <string name="cloud_storage_name_type_title">Имя/Тип</string>
     <string name="cloud_storage_size_title">Размер</string>
 
-
     <!-- String constants for errors -->
     <string name="empty_login">Логин не может быть пустым</string>
     <string name="empty_password">Пароль не может быть пустым</string>
     <string name="password_mismatch">Пароли не совпадают</string>
+    <string name="cant_create_file">Не удалось создать файл</string>
+    <string name="send_not_full_data">Не удалось полностью отправить файл</string>
     <string name="cast_error">Не удалось отобразить ошибку</string>
-
     <string name="connection_error">Не удалось подключиться к серверу</string>
 
 </resources>

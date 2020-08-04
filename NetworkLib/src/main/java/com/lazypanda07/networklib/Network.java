@@ -16,9 +16,9 @@ public class Network
 	{
 		socket = new Socket();
 
-		socket.connect(new InetSocketAddress(ip, port), Constants.clientTimeoutReceive);
+		socket.connect(new InetSocketAddress(ip, port), Constants.CLIENT_TIMEOUT_RECEIVE);
 
-		socket.setSoTimeout(Constants.clientTimeoutReceive);
+		socket.setSoTimeout(Constants.CLIENT_TIMEOUT_RECEIVE);
 	}
 
 	public void sendBytes(byte[] bytes) throws IOException
@@ -28,7 +28,7 @@ public class Network
 
 	public byte[] receiveBytes() throws IOException
 	{
-		byte[] data = new byte[4096];
+		byte[] data = new byte[Constants.HTTP_PACKET_SIZE];
 		InputStream in = socket.getInputStream();
 		int size = 0;
 		int lastPacket = 0;
@@ -78,11 +78,21 @@ public class Network
 	public void close() throws IOException
 	{
 		String exit = (new HTTP.HTTPBuilder()).setMethod("POST")
-				.setHeaders(Constants.RequestType.exitType, Constants.NetworkRequests.exit).build();
+				.setHeaders(Constants.RequestType.EXIT_TYPE, Constants.NetworkRequests.EXIT).build();
 
 		exit = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(exit);
 
 		this.sendBytes(exit.getBytes());
+
+		try
+		{
+			Thread.sleep(600);
+		}
+		catch (InterruptedException e)
+		{
+			socket.close();
+			e.printStackTrace();
+		}
 
 		socket.close();
 	}

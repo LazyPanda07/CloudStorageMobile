@@ -2,7 +2,10 @@ package com.lazypanda07.cloudstoragemobile.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -40,5 +43,18 @@ public class CloudStorageActivity extends AppCompatActivity
 		filesList.setAdapter(adapter);
 
 		NetworkFunctions.getFiles(ref, data, adapter, login, password);
+
+		filesList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+			{
+				String fileName = ((TextView) view.findViewById(R.id.name)).getText().toString();
+				String sFileSize = ((TextView) view.findViewById(R.id.size)).getText().toString();
+				long fileSize = Long.parseLong(sFileSize.substring(0, sFileSize.indexOf(' ')));
+
+				NetworkFunctions.downloadFile(ref, fileName, fileSize, login, password);
+			}
+		});
 	}
 }
