@@ -110,9 +110,9 @@ public class NetworkFunctions
 					}
 					else
 					{
-						network.close();
-
 						ErrorHandling.showError(activity, parser.getBody());
+
+						network.close();
 					}
 				}
 				catch (IOException e)
@@ -188,9 +188,9 @@ public class NetworkFunctions
 					}
 					else
 					{
-						network.close();
-
 						ErrorHandling.showError(activity, parser.getBody());
+
+						network.close();
 					}
 				}
 				catch (IOException e)
@@ -202,7 +202,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> data, final PortraitCloudStorageListViewAdapter adapter, final String login, final String password)
+	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String login, final String password)
 	{
 		new Thread(new Runnable()
 		{
@@ -227,7 +227,7 @@ public class NetworkFunctions
 
 						if (parser.getHeaders().get("Error").equals("0"))
 						{
-							data.clear();
+							fileData.clear();
 
 							String body = new String(parser.getBody(), "CP1251");
 							StringBuilder[] temData = new StringBuilder[6];    //each index equals member position in FileData class
@@ -252,7 +252,7 @@ public class NetworkFunctions
 													Integer.parseInt(temData[5].toString())
 											);
 
-									data.add(tem);
+									fileData.add(tem);
 
 									curIndex = 0;
 
@@ -279,14 +279,14 @@ public class NetworkFunctions
 									adapter.notifyDataSetChanged();
 								}
 							});
-
 						}
 						else
 						{
 							ErrorHandling.showError(activity, parser.getBody());
 						}
-						network.close();
 					}
+
+					network.close();
 				}
 				catch (IOException e)
 				{
@@ -381,7 +381,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> data, final PortraitCloudStorageListViewAdapter adapter)
+	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
 	{
 		new Thread(new Runnable()
 		{
@@ -399,16 +399,16 @@ public class NetworkFunctions
 					{
 						do
 						{
-							byte[] fileData;
+							byte[] data;
 							int nextOffset = 0;
 
 							if (fileSize - offset >= Constants.FILE_PACKET_SIZE)
 							{
-								fileData = new byte[Constants.FILE_PACKET_SIZE];
+								data = new byte[Constants.FILE_PACKET_SIZE];
 
 								try
 								{
-									nextOffset += stream.read(fileData, offset, Constants.FILE_PACKET_SIZE);
+									nextOffset += stream.read(data, offset, Constants.FILE_PACKET_SIZE);
 								}
 								catch (IOException e)
 								{
@@ -419,11 +419,11 @@ public class NetworkFunctions
 							}
 							else
 							{
-								fileData = new byte[fileSize - offset];
+								data = new byte[fileSize - offset];
 
 								try
 								{
-									nextOffset += stream.read(fileData, offset, fileData.length);
+									nextOffset += stream.read(data, offset, data.length);
 								}
 								catch (IOException e)
 								{
@@ -437,39 +437,94 @@ public class NetworkFunctions
 									setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.UPLOAD_FILE).
 									setHeaders("File-Name", fileName).
 									setHeaders("Range", String.valueOf(offset)).
-									setHeaders("Content-Length", String.valueOf(fileData.length)).
+									setHeaders("Content-Length", String.valueOf(data.length)).
 									setHeaders(isLast ? "Total-File-Size" : "Reserved", isLast ? String.valueOf(fileSize) : "0").
-									build(fileData);
+									build(data);
 
 							message = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(message);
 
 							network.sendBytes(message.getBytes(StandardCharsets.ISO_8859_1));
 
 							offset += nextOffset;
+						} while (!isLast);
+
+						HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+						if (parser.getHeaders().get("Error").equals("1"))
+						{
+							ErrorHandling.showError(activity, parser.getBody());
+
+							network.close();
 						}
-						while (!isLast);
-					}
+						else
+						{
+							activity.runOnUiThread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									Toast.makeText(activity.getApplicationContext(), "Файл загружен", Toast.LENGTH_SHORT).show();
+								}
+							});
 
-					HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+							network.close();
 
-					if (parser.getHeaders().get("Error").equals("1"))
-					{
-						ErrorHandling.showError(activity, parser.getBody());
+							getFiles(activity, fileData, adapter, login, password);
+						}
 					}
 					else
 					{
-						activity.runOnUiThread(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								Toast.makeText(activity.getApplicationContext(), "Файл загружен", Toast.LENGTH_SHORT).show();
-							}
-						});
-
-						getFiles(activity, data, adapter, login, password);
+						network.close();
 					}
+				}
+				catch (IOException e)
+				{
+					ErrorHandling.showError(activity, R.string.connection_error);
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
 
+	public static void removeFile(final AppCompatActivity activity, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
+
+					if (authorization(network, login, password))
+					{
+						String request = (new HTTP.HTTPBuilder()).setMethod("POST").
+								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.REMOVE_FILE).
+								setHeaders("File-Name", fileName)
+								.build();
+
+						request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+						network.sendBytes(request.getBytes());
+
+						HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+						if (parser.getHeaders().get("Error").equals("0"))
+						{
+							network.close();
+
+							getFiles(activity, fileData, adapter, login, password);
+
+							//TODO: success message
+						}
+						else
+						{
+							ErrorHandling.showError(activity, "Не удалось удалить " + fileName);
+
+							network.close();
+						}
+					}
 				}
 				catch (IOException e)
 				{
