@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".Activities.DownloadedFilesActivity"></activity>
         <activity android:name=".Activities.CloudStorageActivity" />
         <activity android:name=".Activities.RegistrationActivity" />
         <activity android:name=".Activities.AuthorizationActivity">

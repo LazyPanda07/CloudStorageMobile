@@ -111,6 +111,11 @@ public class CloudStorageActivity extends AppCompatActivity
 						//TODO: create folder method
 
 						break;
+
+					case R.id.downloaded_files:
+						startActivity(new Intent(getApplicationContext(), DownloadedFilesActivity.class));
+
+						break;
 				}
 
 				return false;

@@ -11,6 +11,10 @@
             android:id="@+id/upload_file"
             android:title="@string/upload_file" />
 
+        <item
+            android:id="@+id/downloaded_files"
+            android:title="@string/downloaded_files" />
+
     </group>
 
 </menu>
