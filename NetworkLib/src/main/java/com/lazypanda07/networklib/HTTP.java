@@ -1,6 +1,7 @@
 package com.lazypanda07.networklib;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -144,7 +145,7 @@ public class HTTP
 
 			String[] array = HTTPHeaders.split("\r\n");
 
-			for (String i: array)
+			for (String i : array)
 			{
 				String[] tem = i.split(": ");
 
@@ -232,6 +233,7 @@ public class HTTP
 
 			builder.insert(HTTPMessage.indexOf("\r\n") + 2, totalHTTPMessageSize);
 
+
 			return builder.toString();
 		}
 
@@ -244,7 +246,14 @@ public class HTTP
 
 		public HTTPBuilder setParameters(String parameters)
 		{
-			this.parameters = parameters;
+			try
+			{
+				this.parameters = new String(parameters.getBytes(), "CP1251");
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				e.printStackTrace();
+			}
 
 			return this;
 		}
@@ -260,7 +269,7 @@ public class HTTP
 		{
 			try
 			{
-				headers += name + ": " + new String(value.getBytes(), "CP1251") + "\r\n";
+				headers += name + ": " + new String(value.getBytes("CP1251")) + "\r\n";
 			}
 			catch (UnsupportedEncodingException e)
 			{
@@ -309,7 +318,7 @@ public class HTTP
 				result = method + " " + parameters + " " + HTTPVersion + "\r\n" + headers;
 			}
 
-			result += "\r\n" + new String(body);
+			result += "\r\n" + new String(body, StandardCharsets.ISO_8859_1);
 
 			return result;
 		}

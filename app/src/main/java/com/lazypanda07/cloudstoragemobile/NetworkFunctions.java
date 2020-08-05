@@ -14,9 +14,11 @@ import com.lazypanda07.networklib.Constants;
 import com.lazypanda07.networklib.HTTP;
 import com.lazypanda07.networklib.Network;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class NetworkFunctions
@@ -225,6 +227,8 @@ public class NetworkFunctions
 
 						if (parser.getHeaders().get("Error").equals("0"))
 						{
+							data.clear();
+
 							String body = new String(parser.getBody(), "CP1251");
 							StringBuilder[] temData = new StringBuilder[6];    //each index equals member position in FileData class
 							int curIndex = 0;
@@ -252,7 +256,7 @@ public class NetworkFunctions
 
 									curIndex = 0;
 
-									for (StringBuilder j: temData)
+									for (StringBuilder j : temData)
 									{
 										j.setLength(0);
 									}
@@ -372,6 +376,105 @@ public class NetworkFunctions
 							Toast.makeText(activity.getApplicationContext(), success, Toast.LENGTH_SHORT).show();
 						}
 					});
+				}
+			}
+		}).start();
+	}
+
+	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> data, final PortraitCloudStorageListViewAdapter adapter)
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				int offset = 0;
+				boolean isLast;
+
+				try
+				{
+					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
+
+					if (authorization(network, login, password))
+					{
+						do
+						{
+							byte[] fileData;
+							int nextOffset = 0;
+
+							if (fileSize - offset >= Constants.FILE_PACKET_SIZE)
+							{
+								fileData = new byte[Constants.FILE_PACKET_SIZE];
+
+								try
+								{
+									nextOffset += stream.read(fileData, offset, Constants.FILE_PACKET_SIZE);
+								}
+								catch (IOException e)
+								{
+									e.printStackTrace();
+								}
+
+								isLast = false;
+							}
+							else
+							{
+								fileData = new byte[fileSize - offset];
+
+								try
+								{
+									nextOffset += stream.read(fileData, offset, fileData.length);
+								}
+								catch (IOException e)
+								{
+									e.printStackTrace();
+								}
+
+								isLast = true;
+							}
+
+							String message = (new HTTP.HTTPBuilder()).setMethod("POST").
+									setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.UPLOAD_FILE).
+									setHeaders("File-Name", fileName).
+									setHeaders("Range", String.valueOf(offset)).
+									setHeaders("Content-Length", String.valueOf(fileData.length)).
+									setHeaders(isLast ? "Total-File-Size" : "Reserved", isLast ? String.valueOf(fileSize) : "0").
+									build(fileData);
+
+							message = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(message);
+
+							network.sendBytes(message.getBytes(StandardCharsets.ISO_8859_1));
+
+							offset += nextOffset;
+						}
+						while (!isLast);
+					}
+
+					HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+					if (parser.getHeaders().get("Error").equals("1"))
+					{
+						ErrorHandling.showError(activity, parser.getBody());
+					}
+					else
+					{
+						activity.runOnUiThread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								Toast.makeText(activity.getApplicationContext(), "Файл загружен", Toast.LENGTH_SHORT).show();
+							}
+						});
+
+						getFiles(activity, data, adapter, login, password);
+					}
+
+				}
+				catch (IOException e)
+				{
+					ErrorHandling.showError(activity, R.string.connection_error);
+					e.printStackTrace();
 				}
 			}
 		}).start();

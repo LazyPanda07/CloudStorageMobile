@@ -20,8 +20,10 @@
 
     <!-- String constants for CloudStorageActivity -->
     <string name="cloud_storage_title">CloudStorage</string>
+
     <string name="cloud_storage_name_type_title">Имя/Тип</string>
     <string name="cloud_storage_size_title">Размер</string>
+    <string name="choose_file">Выберите файл для загрузки</string>
 
     <!-- String constants for errors -->
     <string name="empty_login">Логин не может быть пустым</string>
