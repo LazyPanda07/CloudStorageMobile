@@ -25,6 +25,12 @@
     <string name="cloud_storage_size_title">Размер</string>
     <string name="choose_file">Выберите файл для загрузки</string>
 
+    <!-- String constants for menus in CloudStorageActivity -->
+    <string name="download_file_title">Скачать файл</string>
+    <string name="remove_file_title">Удалить файл</string>
+    <string name="create_folder">Новая папка</string>
+    <string name="upload_file">Загрузить файл</string>
+
     <!-- String constants for errors -->
     <string name="empty_login">Логин не может быть пустым</string>
     <string name="empty_password">Пароль не может быть пустым</string>

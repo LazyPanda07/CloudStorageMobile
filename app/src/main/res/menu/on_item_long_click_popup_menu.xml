@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group>
+
+        <item
+            android:id="@+id/download_file"
+            android:title="@string/download_file_title" />
+
+        <item
+            android:id="@+id/remove_file"
+            android:title="@string/remove_file_title" />
+
+        <!-- Temporary solution -->
+        <item
+            android:id="@+id/upload_file"
+            android:title="@string/upload_file" />
+
+    </group>
+
+</menu>
