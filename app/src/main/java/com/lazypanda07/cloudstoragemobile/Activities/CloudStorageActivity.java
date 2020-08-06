@@ -40,7 +40,7 @@ public class CloudStorageActivity extends AppCompatActivity
 {
 	private AppCompatActivity ref = this;
 	private DrawerLayout drawerLayout;
-	private String currentPath;
+	private String[] currentPath;
 	private ArrayList<FileData> fileData;
 	private PortraitCloudStorageListViewAdapter adapter;
 	private String login;
@@ -52,7 +52,8 @@ public class CloudStorageActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_cloud_storage);
 
-		currentPath = "Home";
+		currentPath = new String[1];
+		currentPath[0] = "Home";
 		fileData = new ArrayList<>();
 		adapter = new PortraitCloudStorageListViewAdapter(getApplicationContext(), fileData);
 		drawerLayout = findViewById(R.id.drawer_layout);
@@ -77,7 +78,7 @@ public class CloudStorageActivity extends AppCompatActivity
 
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		NetworkFunctions.getFiles(ref, fileData, adapter, login, password);
+		NetworkFunctions.getFiles(ref, fileData, adapter, login, password, currentPath);
 
 		filesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
 		{
@@ -106,7 +107,14 @@ public class CloudStorageActivity extends AppCompatActivity
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
 			{
-				//TODO: open file or directory
+				if (((TextView) view.findViewById(R.id.size)).getText().toString().isEmpty())    //folder
+				{
+					NetworkFunctions.nextFolder(ref, ((TextView) view.findViewById(R.id.name)).getText().toString(), currentPath, login, password, fileData, adapter);
+				}
+				else    //file
+				{
+
+				}
 			}
 		});
 
@@ -187,7 +195,7 @@ public class CloudStorageActivity extends AppCompatActivity
 						break;
 
 					case R.id.remove_file:
-						NetworkFunctions.removeFile(ref, fileName, login, password, fileData, adapter);
+						NetworkFunctions.removeFile(ref, fileName, login, password, fileData, adapter, currentPath);
 
 						break;
 
@@ -253,7 +261,7 @@ public class CloudStorageActivity extends AppCompatActivity
 					return;
 				}
 
-				NetworkFunctions.createFolder(ref, folderName, login, password, fileData, adapter);
+				NetworkFunctions.createFolder(ref, folderName, login, password, fileData, adapter, currentPath);
 			}
 		});
 
@@ -309,7 +317,7 @@ public class CloudStorageActivity extends AppCompatActivity
 				int fileSize = getFileSize(uri);
 				DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uri));
 
-				NetworkFunctions.uploadFile(ref, stream, fileSize, getFileName(uri), login, password, fileData, adapter);
+				NetworkFunctions.uploadFile(ref, stream, fileSize, getFileName(uri), login, password, fileData, adapter, currentPath);
 			}
 			catch (IOException e)
 			{

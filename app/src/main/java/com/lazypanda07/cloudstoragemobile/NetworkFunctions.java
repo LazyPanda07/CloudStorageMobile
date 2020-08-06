@@ -18,18 +18,19 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class NetworkFunctions
 {
-	public enum Storage
+	public enum StorageType
 	{
 		INTERNAL,
 		SDCard
 	}
 
-	public static Storage storageType = Storage.INTERNAL;
+	public static StorageType storageType = StorageType.INTERNAL;
 
 	private static boolean authorization(@org.jetbrains.annotations.NotNull Network network, String login, String password)
 	{
@@ -55,6 +56,63 @@ public class NetworkFunctions
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	private static String folderControlMessages(Network network, final String folderName, final String controlRequest)
+	{
+		try
+		{
+			String request = "";
+
+			if (controlRequest.equals(Constants.ControlRequests.PREVIOUS_FOLDER))
+			{
+				request = (new HTTP.HTTPBuilder()).setMethod("POST").
+						setHeaders(Constants.RequestType.CONTROL_TYPE, controlRequest).
+						build();
+			}
+			else
+			{
+				try
+				{
+					String body = "folder=" + folderName;
+
+					request = (new HTTP.HTTPBuilder()).setMethod("POST").
+							setHeaders(Constants.RequestType.CONTROL_TYPE, controlRequest).
+							setHeaders("Content-Length", String.valueOf(body.length())).
+							build(body.getBytes("CP1251"));
+				}
+				catch (UnsupportedEncodingException e)
+				{
+					e.printStackTrace();
+					return "";
+				}
+			}
+
+			request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+			try
+			{
+				network.sendBytes(request.getBytes("CP1251"));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				return "";
+			}
+
+			return new String(network.receiveBytes(), "CP1251");
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		return "";
+	}
+
+	private static boolean setPath(Network network, final String[] currentPath)
+	{
+		return folderControlMessages(network, currentPath[0], Constants.ControlRequests.SET_PATH).equals(Constants.Responses.OK_RESPONSE);
 	}
 
 	public static void authorization(final AppCompatActivity activity)
@@ -202,7 +260,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String login, final String password)
+	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String login, final String password, final String[] currentPath)
 	{
 		new Thread(new Runnable()
 		{
@@ -219,70 +277,73 @@ public class NetworkFunctions
 								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.SHOW_ALL_FILES_IN_DIRECTORY).
 								build();
 
-						request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
-
-						network.sendBytes(request.getBytes());
-
-						HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
-
-						if (parser.getHeaders().get("Error").equals("0"))
+						if (!setPath(network, currentPath))
 						{
-							fileData.clear();
+							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
-							String body = new String(parser.getBody(), "CP1251");
-							StringBuilder[] temData = new StringBuilder[6];    //each index equals member position in FileData class
-							int curIndex = 0;
+							network.sendBytes(request.getBytes());
 
-							for (int i = 0; i < temData.length; i++)
+							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+							if (parser.getHeaders().get("Error").equals("0"))
 							{
-								temData[i] = new StringBuilder();
-							}
+								fileData.clear();
 
-							for (int i = 0; i < body.length(); i++)
-							{
-								if (body.charAt(i) == Constants.DATA_DELIMITER.charAt(0))
+								String body = new String(parser.getBody(), "CP1251");
+								StringBuilder[] temData = new StringBuilder[6];    //each index equals member position in FileData class
+								int curIndex = 0;
+
+								for (int i = 0; i < temData.length; i++)
 								{
-									FileData tem = new FileData
-											(
-													temData[0].toString(),
-													temData[1].toString(),
-													temData[2].toString(),
-													temData[3].toString(),
-													temData[4].toString(),
-													Integer.parseInt(temData[5].toString())
-											);
+									temData[i] = new StringBuilder();
+								}
 
-									fileData.add(tem);
-
-									curIndex = 0;
-
-									for (StringBuilder j : temData)
+								for (int i = 0; i < body.length(); i++)
+								{
+									if (body.charAt(i) == Constants.DATA_DELIMITER.charAt(0))
 									{
-										j.setLength(0);
+										FileData tem = new FileData
+												(
+														temData[0].toString(),
+														temData[1].toString(),
+														temData[2].toString(),
+														temData[3].toString(),
+														temData[4].toString(),
+														Integer.parseInt(temData[5].toString())
+												);
+
+										fileData.add(tem);
+
+										curIndex = 0;
+
+										for (StringBuilder j : temData)
+										{
+											j.setLength(0);
+										}
+									}
+									else if (body.charAt(i) == Constants.DATA_PART_DELIMITER.charAt(0))
+									{
+										curIndex++;
+									}
+									else
+									{
+										temData[curIndex].append(body.charAt(i));
 									}
 								}
-								else if (body.charAt(i) == Constants.DATA_PART_DELIMITER.charAt(0))
-								{
-									curIndex++;
-								}
-								else
-								{
-									temData[curIndex].append(body.charAt(i));
-								}
-							}
 
-							activity.runOnUiThread(new Runnable()
-							{
-								@Override
-								public void run()
+								activity.runOnUiThread(new Runnable()
 								{
-									adapter.notifyDataSetChanged();
-								}
-							});
-						}
-						else
-						{
-							ErrorHandling.showError(activity, parser.getBody());
+									@Override
+									public void run()
+									{
+										adapter.notifyDataSetChanged();
+									}
+								});
+							}
+							else
+							{
+								ErrorHandling.showError(activity, parser.getBody());
+							}
 						}
 					}
 
@@ -381,7 +442,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
+	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
 	{
 		new Thread(new Runnable()
 		{
@@ -469,7 +530,7 @@ public class NetworkFunctions
 
 							network.close();
 
-							getFiles(activity, fileData, adapter, login, password);
+							getFiles(activity, fileData, adapter, login, password, currentPath);
 						}
 					}
 					else
@@ -486,7 +547,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void removeFile(final AppCompatActivity activity, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
+	public static void removeFile(final AppCompatActivity activity, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
 	{
 		new Thread(new Runnable()
 		{
@@ -514,7 +575,7 @@ public class NetworkFunctions
 						{
 							network.close();
 
-							getFiles(activity, fileData, adapter, login, password);
+							getFiles(activity, fileData, adapter, login, password, currentPath);
 
 							//TODO: success message
 						}
@@ -535,7 +596,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void createFolder(final AppCompatActivity activity, final String folderName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
+	public static void createFolder(final AppCompatActivity activity, final String folderName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
 	{
 		new Thread(new Runnable()
 		{
@@ -561,7 +622,7 @@ public class NetworkFunctions
 
 						network.close();
 
-						getFiles(activity, fileData, adapter, login, password);
+						getFiles(activity, fileData, adapter, login, password, currentPath);
 					}
 					else
 					{
@@ -574,6 +635,39 @@ public class NetworkFunctions
 					e.printStackTrace();
 				}
 
+			}
+		}).start();
+	}
+
+	public static void nextFolder(final AppCompatActivity activity, final String folderName, final String[] currentPath, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				currentPath[0] = currentPath[0] + "\\" + folderName;
+
+				getFiles(activity, fileData, adapter, login, password, currentPath);
+			}
+		}).start();
+	}
+
+	public static void prevFolder(final AppCompatActivity activity, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (currentPath[0].equals("Home"))
+				{
+					return;
+				}
+
+				currentPath[0] = currentPath[0].substring(0, currentPath[0].lastIndexOf('\\'));
+
+				getFiles(activity, fileData, adapter, login, password, currentPath);
 			}
 		}).start();
 	}
