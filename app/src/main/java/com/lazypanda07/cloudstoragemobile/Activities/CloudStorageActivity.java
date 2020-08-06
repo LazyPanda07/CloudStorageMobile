@@ -1,5 +1,6 @@
 package com.lazypanda07.cloudstoragemobile.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -8,6 +9,8 @@ import android.provider.OpenableColumns;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -80,7 +84,7 @@ public class CloudStorageActivity extends AppCompatActivity
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
 			{
-				showOnItemLongClickPopupMenu(view);
+				showPopupMenuOnItemLongClick(view);
 
 				return true;
 			}
@@ -91,7 +95,7 @@ public class CloudStorageActivity extends AppCompatActivity
 			@Override
 			public boolean onLongClick(View view)
 			{
-				showOnLayoutLongClickPopupMenu(filesList);
+				showPopupMenuOnLayoutLongClick(filesList);
 
 				return true;
 			}
@@ -143,7 +147,7 @@ public class CloudStorageActivity extends AppCompatActivity
 		});
 	}
 
-	private void showOnLayoutLongClickPopupMenu(final View view)
+	private void showPopupMenuOnLayoutLongClick(final View view)
 	{
 		PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
 		popupMenu.inflate(R.menu.on_layout_long_click_popup_menu);
@@ -160,7 +164,7 @@ public class CloudStorageActivity extends AppCompatActivity
 		popupMenu.show();
 	}
 
-	private void showOnItemLongClickPopupMenu(final View view)
+	private void showPopupMenuOnItemLongClick(final View view)
 	{
 		PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
 		popupMenu.inflate(R.menu.on_item_long_click_popup_menu);
@@ -218,7 +222,7 @@ public class CloudStorageActivity extends AppCompatActivity
 				return true;
 
 			case R.id.create_folder:
-				//TODO: create folder method
+				chooseFolderName();
 
 				return true;
 
@@ -229,6 +233,49 @@ public class CloudStorageActivity extends AppCompatActivity
 		}
 
 		return false;
+	}
+
+	private void chooseFolderName()
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		final EditText folderNameEdit = new EditText(builder.getContext());
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+		builder.setPositiveButton(R.string.save_folder_name, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i)
+			{
+				String folderName = folderNameEdit.getText().toString();
+
+				if (folderName.isEmpty())
+				{
+					return;
+				}
+
+				NetworkFunctions.createFolder(ref, folderName, login, password, fileData, adapter);
+			}
+		});
+
+		builder.setNegativeButton(R.string.cancel_folder_name, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i)
+			{
+
+			}
+		});
+
+		builder.setTitle(R.string.choose_folder_name_title);
+		builder.setMessage(R.string.choose_folder_name);
+		builder.setCancelable(true);
+
+		folderNameEdit.setLayoutParams(params);
+		folderNameEdit.setSingleLine(true);
+
+		builder.setView(folderNameEdit);
+
+		builder.show();
 	}
 
 	@Override

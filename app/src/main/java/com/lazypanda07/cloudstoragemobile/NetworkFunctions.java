@@ -534,4 +534,48 @@ public class NetworkFunctions
 			}
 		}).start();
 	}
+
+	public static void createFolder(final AppCompatActivity activity, final String folderName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
+
+					if (authorization(network, login, password))
+					{
+						String body = "folder=" + folderName;
+
+						String request = (new HTTP.HTTPBuilder()).setMethod("POST").
+								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.CREATE_FOLDER).
+								setHeaders("Content-Length", String.valueOf(body.length())).
+								build(body.getBytes());
+
+						request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+						network.sendBytes(request.getBytes("CP1251"));
+
+						network.close();
+
+						getFiles(activity, fileData, adapter, login, password);
+					}
+					else
+					{
+						network.close();
+					}
+				}
+				catch (IOException e)
+				{
+					ErrorHandling.showError(activity, R.string.connection_error);
+					e.printStackTrace();
+				}
+
+			}
+		}).start();
+	}
+
 }

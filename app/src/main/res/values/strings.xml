@@ -23,7 +23,11 @@
 
     <string name="cloud_storage_name_type_title">Имя/Тип</string>
     <string name="cloud_storage_size_title">Размер</string>
+    <string name="choose_folder_name_title">Создание новой папки</string>
     <string name="choose_file">Выберите файл для загрузки</string>
+    <string name="choose_folder_name">Выберите название для новой папки</string>
+    <string name="save_folder_name">Сохранить</string>
+    <string name="cancel_folder_name">Отменить</string>
 
     <!-- String constants for menus in CloudStorageActivity -->
     <string name="download_file_title">Скачать файл</string>
