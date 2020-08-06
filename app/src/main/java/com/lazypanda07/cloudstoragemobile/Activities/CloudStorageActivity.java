@@ -61,7 +61,6 @@ public class CloudStorageActivity extends AppCompatActivity
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		final ActionBar actionBar;
 		toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
-
 		final ListView filesList = findViewById(R.id.files_list);
 		Intent intent = getIntent();
 
@@ -328,6 +327,11 @@ public class CloudStorageActivity extends AppCompatActivity
 		{
 			Toast.makeText(getApplicationContext(), "Ошибка", Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	public void previousFolder(View view)
+	{
+		NetworkFunctions.prevFolder(ref, login, password, fileData, adapter, currentPath);
 	}
 
 	private int getFileSize(Uri fileUri)

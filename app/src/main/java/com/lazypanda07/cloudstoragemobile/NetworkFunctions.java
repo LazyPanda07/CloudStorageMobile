@@ -285,10 +285,10 @@ public class NetworkFunctions
 
 							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
 
+							fileData.clear();
+
 							if (parser.getHeaders().get("Error").equals("0"))
 							{
-								fileData.clear();
-
 								String body = new String(parser.getBody(), "CP1251");
 								StringBuilder[] temData = new StringBuilder[6];    //each index equals member position in FileData class
 								int curIndex = 0;
@@ -330,20 +330,20 @@ public class NetworkFunctions
 										temData[curIndex].append(body.charAt(i));
 									}
 								}
-
-								activity.runOnUiThread(new Runnable()
-								{
-									@Override
-									public void run()
-									{
-										adapter.notifyDataSetChanged();
-									}
-								});
 							}
 							else
 							{
 								ErrorHandling.showError(activity, parser.getBody());
 							}
+
+							activity.runOnUiThread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									adapter.notifyDataSetChanged();
+								}
+							});
 						}
 					}
 

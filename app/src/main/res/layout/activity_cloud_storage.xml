@@ -32,10 +32,19 @@
                 android:orientation="horizontal"
                 android:weightSum="10">
 
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/colorWhite"
+                    android:contentDescription="@string/previous_folder"
+                    android:onClick="previousFolder"
+                    android:src="@drawable/ic_arrow_back" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="7"
                     android:text="@string/cloud_storage_name_type_title"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/pageTitles" />

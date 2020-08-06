@@ -35,6 +35,7 @@
     <string name="create_folder">Новая папка</string>
     <string name="upload_file">Загрузить файл</string>
     <string name="downloaded_files">Скачанные файлы</string>
+    <string name="previous_folder">Предыдущая папка</string>
 
     <!-- String constants for errors -->
     <string name="empty_login">Логин не может быть пустым</string>
