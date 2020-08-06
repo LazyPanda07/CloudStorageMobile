@@ -1,55 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cloud_storage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".Activities.CloudStorageActivity">
 
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        app:navigationIcon="@drawable/ic_menu" />
 
-        <TextView
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/cloud_storage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="10">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:text="@string/cloud_storage_name_type_title"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/pageTitles" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="end"
+                    android:text="@string/cloud_storage_size_title"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/pageTitles" />
+
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/files_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/half_activity_horizontal_margin" />
+
+        </LinearLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cloud_storage_title"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/pageTitles" />
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:menu="@menu/on_layout_long_click_popup_menu" />
 
-    </androidx.appcompat.widget.Toolbar>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:text="@string/cloud_storage_name_type_title"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/pageTitles" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="end"
-            android:text="@string/cloud_storage_size_title"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/pageTitles" />
-
-    </LinearLayout>
-
-    <ListView
-        android:id="@+id/files_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/half_activity_horizontal_margin" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </LinearLayout>

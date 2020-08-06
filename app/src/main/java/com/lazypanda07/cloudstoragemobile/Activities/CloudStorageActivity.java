@@ -13,9 +13,15 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.lazypanda07.cloudstoragemobile.CustomListView.FileData;
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
@@ -29,6 +35,7 @@ import java.util.ArrayList;
 public class CloudStorageActivity extends AppCompatActivity
 {
 	private AppCompatActivity ref = this;
+	private DrawerLayout drawerLayout;
 	private String currentPath;
 	private ArrayList<FileData> fileData;
 	private PortraitCloudStorageListViewAdapter adapter;
@@ -40,9 +47,15 @@ public class CloudStorageActivity extends AppCompatActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_cloud_storage);
+
 		currentPath = "Home";
 		fileData = new ArrayList<>();
 		adapter = new PortraitCloudStorageListViewAdapter(getApplicationContext(), fileData);
+		drawerLayout = findViewById(R.id.drawer_layout);
+		NavigationView navigationView = findViewById(R.id.navigation_view);
+		Toolbar toolbar = findViewById(R.id.toolbar);
+		final ActionBar actionBar;
+		toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
 
 		final ListView filesList = findViewById(R.id.files_list);
 		Intent intent = getIntent();
@@ -51,6 +64,14 @@ public class CloudStorageActivity extends AppCompatActivity
 		password = intent.getStringExtra("password");
 
 		filesList.setAdapter(adapter);
+
+		setSupportActionBar(toolbar);
+
+		actionBar = getSupportActionBar();
+
+		actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		NetworkFunctions.getFiles(ref, fileData, adapter, login, password);
 
@@ -84,6 +105,42 @@ public class CloudStorageActivity extends AppCompatActivity
 				//TODO: open file or directory
 			}
 		});
+
+		navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
+		{
+			@Override
+			public boolean onNavigationItemSelected(@NonNull MenuItem item)
+			{
+				return menuItemsEventsHandler(item);
+			}
+		});
+
+		drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener()
+		{
+			@Override
+			public void onDrawerSlide(@NonNull View drawerView, float slideOffset)
+			{
+
+			}
+
+			@Override
+			public void onDrawerOpened(@NonNull View drawerView)
+			{
+				actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_open);
+			}
+
+			@Override
+			public void onDrawerClosed(@NonNull View drawerView)
+			{
+				actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+			}
+
+			@Override
+			public void onDrawerStateChanged(int newState)
+			{
+
+			}
+		});
 	}
 
 	private void showOnLayoutLongClickPopupMenu(final View view)
@@ -96,29 +153,7 @@ public class CloudStorageActivity extends AppCompatActivity
 			@Override
 			public boolean onMenuItemClick(MenuItem menuItem)
 			{
-				switch (menuItem.getItemId())
-				{
-					case R.id.upload_file:
-						Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-						intent.setType("*/*");
-						intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-						startActivityForResult(Intent.createChooser(intent, getApplicationContext().getResources().getString(R.string.choose_file)), Constants.GET_FILE);
-
-						break;
-
-					case R.id.create_folder:
-						//TODO: create folder method
-
-						break;
-
-					case R.id.downloaded_files:
-						startActivity(new Intent(getApplicationContext(), DownloadedFilesActivity.class));
-
-						break;
-				}
-
-				return false;
+				return menuItemsEventsHandler(menuItem);
 			}
 		});
 
@@ -167,6 +202,51 @@ public class CloudStorageActivity extends AppCompatActivity
 		});
 
 		popupMenu.show();
+	}
+
+	private boolean menuItemsEventsHandler(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.upload_file:
+				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+				intent.setType("*/*");
+				intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+				startActivityForResult(Intent.createChooser(intent, getApplicationContext().getResources().getString(R.string.choose_file)), Constants.GET_FILE);
+
+				return true;
+
+			case R.id.create_folder:
+				//TODO: create folder method
+
+				return true;
+
+			case R.id.downloaded_files:
+				startActivity(new Intent(getApplicationContext(), DownloadedFilesActivity.class));
+
+				return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item)
+	{
+		if (item.getItemId() == android.R.id.home)
+		{
+			if (drawerLayout.isDrawerOpen(GravityCompat.START))
+			{
+				drawerLayout.closeDrawer(GravityCompat.START);
+			}
+			else
+			{
+				drawerLayout.openDrawer(GravityCompat.START);
+			}
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
