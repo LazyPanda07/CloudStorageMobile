@@ -189,7 +189,7 @@ public class CloudStorageActivity extends AppCompatActivity
 						String sFileSize = ((TextView) view.findViewById(R.id.size)).getText().toString();
 						long fileSize = Long.parseLong(sFileSize.substring(0, sFileSize.indexOf(' ')));
 
-						NetworkFunctions.downloadFile(ref, fileName, fileSize, login, password);
+						NetworkFunctions.downloadFile(ref, fileName, fileSize, login, password, currentPath);
 
 						break;
 
@@ -281,6 +281,7 @@ public class CloudStorageActivity extends AppCompatActivity
 		folderNameEdit.setSingleLine(true);
 
 		builder.setView(folderNameEdit);
+		folderNameEdit.requestFocus();
 
 		builder.show();
 	}

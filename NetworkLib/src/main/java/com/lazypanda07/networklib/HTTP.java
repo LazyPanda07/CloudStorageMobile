@@ -28,6 +28,7 @@ public class HTTP
 			method = "";
 			body = new ArrayList<>();
 			String HTTPHeaders = "";
+			boolean isContainsBody = false;
 
 			int firstStringEnd = HTTPMessage.indexOf("\r\n") + 2;
 			String firstString = HTTPMessage.substring(0, firstStringEnd);
@@ -127,7 +128,9 @@ public class HTTP
 				parameters = firstString.substring(firstString.indexOf("/"), firstString.indexOf(" ", firstString.indexOf("/")));
 			}
 
-			if (HTTPMessage.contains("Content-Length"))
+			isContainsBody = HTTPMessage.contains("Content-Length");
+
+			if (isContainsBody)
 			{
 				int bodyStart = HTTPMessage.indexOf("\r\n\r\n") + 4;
 
@@ -150,6 +153,16 @@ public class HTTP
 				String[] tem = i.split(": ");
 
 				headers.put(tem[0], tem[1]);
+			}
+
+			if (isContainsBody)
+			{
+				int contentLength = Integer.parseInt(headers.get("Content-Length"));
+
+				if (contentLength < body.size())
+				{
+					body.subList(contentLength, body.size()).clear();
+				}
 			}
 		}
 

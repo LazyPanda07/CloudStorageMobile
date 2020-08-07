@@ -112,7 +112,20 @@ public class NetworkFunctions
 
 	private static boolean setPath(Network network, final String[] currentPath)
 	{
-		return folderControlMessages(network, currentPath[0], Constants.ControlRequests.SET_PATH).equals(Constants.Responses.OK_RESPONSE);
+		try
+		{
+			return new String(new HTTP.HTTPParser
+					(
+							folderControlMessages(network, currentPath[0], Constants.ControlRequests.SET_PATH).getBytes("CP1251")
+					).
+					getBody()).
+					equals(Constants.Responses.OK_RESPONSE);
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public static void authorization(final AppCompatActivity activity)
@@ -277,7 +290,7 @@ public class NetworkFunctions
 								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.SHOW_ALL_FILES_IN_DIRECTORY).
 								build();
 
-						if (!setPath(network, currentPath))
+						if (setPath(network, currentPath))
 						{
 							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
@@ -358,7 +371,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void downloadFile(final AppCompatActivity activity, final String fileName, final long fileSize, final String login, final String password)
+	public static void downloadFile(final AppCompatActivity activity, final String fileName, final long fileSize, final String login, final String password, final String[] currentPath)
 	{
 		new Thread(new Runnable()
 		{
@@ -381,30 +394,33 @@ public class NetworkFunctions
 
 						if (authorization(network, login, password))
 						{
-							while (true)
+							if (setPath(network, currentPath))
 							{
-								String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-										setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.DOWNLOAD_FILE).
-										setHeaders("File-Name", fileName).
-										setHeaders("Range", String.valueOf(offset)).
-										build();
-
-								request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
-
-								network.sendBytes(request.getBytes("CP1251"));
-
-								HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
-
-								String checkTotalFileSize = parser.getHeaders().get("Total-File-Size");
-
-								out.write(parser.getBody());
-
-								offset += parser.getBody().length;
-
-								if (checkTotalFileSize != null)
+								while (true)
 								{
-									totalFileSize = Long.parseLong(checkTotalFileSize);
-									break;
+									String request = (new HTTP.HTTPBuilder()).setMethod("POST").
+											setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.DOWNLOAD_FILE).
+											setHeaders("File-Name", fileName).
+											setHeaders("Range", String.valueOf(offset)).
+											build();
+
+									request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+									network.sendBytes(request.getBytes("CP1251"));
+
+									HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+									String checkTotalFileSize = parser.getHeaders().get("Total-File-Size");
+
+									out.write(parser.getBody());
+
+									offset += parser.getBody().length;
+
+									if (checkTotalFileSize != null)
+									{
+										totalFileSize = Long.parseLong(checkTotalFileSize);
+										break;
+									}
 								}
 							}
 						}
@@ -458,79 +474,82 @@ public class NetworkFunctions
 
 					if (authorization(network, login, password))
 					{
-						do
+						if (setPath(network, currentPath))
 						{
-							byte[] data;
-							int nextOffset = 0;
-
-							if (fileSize - offset >= Constants.FILE_PACKET_SIZE)
+							do
 							{
-								data = new byte[Constants.FILE_PACKET_SIZE];
+								byte[] data;
+								int nextOffset = 0;
 
-								try
+								if (fileSize - offset >= Constants.FILE_PACKET_SIZE)
 								{
-									nextOffset += stream.read(data, offset, Constants.FILE_PACKET_SIZE);
+									data = new byte[Constants.FILE_PACKET_SIZE];
+
+									try
+									{
+										nextOffset += stream.read(data, offset, Constants.FILE_PACKET_SIZE);
+									}
+									catch (IOException e)
+									{
+										e.printStackTrace();
+									}
+
+									isLast = false;
 								}
-								catch (IOException e)
+								else
 								{
-									e.printStackTrace();
+									data = new byte[fileSize - offset];
+
+									try
+									{
+										nextOffset += stream.read(data, offset, data.length);
+									}
+									catch (IOException e)
+									{
+										e.printStackTrace();
+									}
+
+									isLast = true;
 								}
 
-								isLast = false;
+								String message = (new HTTP.HTTPBuilder()).setMethod("POST").
+										setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.UPLOAD_FILE).
+										setHeaders("File-Name", fileName).
+										setHeaders("Range", String.valueOf(offset)).
+										setHeaders("Content-Length", String.valueOf(data.length)).
+										setHeaders(isLast ? "Total-File-Size" : "Reserved", isLast ? String.valueOf(fileSize) : "0").
+										build(data);
+
+								message = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(message);
+
+								network.sendBytes(message.getBytes(StandardCharsets.ISO_8859_1));
+
+								offset += nextOffset;
+							} while (!isLast);
+
+							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+							if (parser.getHeaders().get("Error").equals("1"))
+							{
+								ErrorHandling.showError(activity, parser.getBody());
+
+								network.close();
 							}
 							else
 							{
-								data = new byte[fileSize - offset];
-
-								try
+								activity.runOnUiThread(new Runnable()
 								{
-									nextOffset += stream.read(data, offset, data.length);
-								}
-								catch (IOException e)
-								{
-									e.printStackTrace();
-								}
+									@Override
+									public void run()
+									{
+										Toast.makeText(activity.getApplicationContext(), "Файл загружен", Toast.LENGTH_SHORT).show();
+									}
+								});
 
-								isLast = true;
+								network.close();
+
+								getFiles(activity, fileData, adapter, login, password, currentPath);
 							}
-
-							String message = (new HTTP.HTTPBuilder()).setMethod("POST").
-									setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.UPLOAD_FILE).
-									setHeaders("File-Name", fileName).
-									setHeaders("Range", String.valueOf(offset)).
-									setHeaders("Content-Length", String.valueOf(data.length)).
-									setHeaders(isLast ? "Total-File-Size" : "Reserved", isLast ? String.valueOf(fileSize) : "0").
-									build(data);
-
-							message = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(message);
-
-							network.sendBytes(message.getBytes(StandardCharsets.ISO_8859_1));
-
-							offset += nextOffset;
-						} while (!isLast);
-
-						HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
-
-						if (parser.getHeaders().get("Error").equals("1"))
-						{
-							ErrorHandling.showError(activity, parser.getBody());
-
-							network.close();
-						}
-						else
-						{
-							activity.runOnUiThread(new Runnable()
-							{
-								@Override
-								public void run()
-								{
-									Toast.makeText(activity.getApplicationContext(), "Файл загружен", Toast.LENGTH_SHORT).show();
-								}
-							});
-
-							network.close();
-
-							getFiles(activity, fileData, adapter, login, password, currentPath);
 						}
 					}
 					else
@@ -560,30 +579,33 @@ public class NetworkFunctions
 
 					if (authorization(network, login, password))
 					{
-						String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.REMOVE_FILE).
-								setHeaders("File-Name", fileName)
-								.build();
-
-						request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
-
-						network.sendBytes(request.getBytes());
-
-						HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
-
-						if (parser.getHeaders().get("Error").equals("0"))
+						if (setPath(network, currentPath))
 						{
-							network.close();
+							String request = (new HTTP.HTTPBuilder()).setMethod("POST").
+									setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.REMOVE_FILE).
+									setHeaders("File-Name", fileName)
+									.build();
 
-							getFiles(activity, fileData, adapter, login, password, currentPath);
+							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
-							//TODO: success message
-						}
-						else
-						{
-							ErrorHandling.showError(activity, "Не удалось удалить " + fileName);
+							network.sendBytes(request.getBytes());
 
-							network.close();
+							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+							if (parser.getHeaders().get("Error").equals("0"))
+							{
+								network.close();
+
+								getFiles(activity, fileData, adapter, login, password, currentPath);
+
+								//TODO: success message
+							}
+							else
+							{
+								ErrorHandling.showError(activity, "Не удалось удалить " + fileName);
+
+								network.close();
+							}
 						}
 					}
 				}
@@ -609,20 +631,23 @@ public class NetworkFunctions
 
 					if (authorization(network, login, password))
 					{
-						String body = "folder=" + folderName;
+						if (setPath(network, currentPath))
+						{
+							String body = "folder=" + folderName;
 
-						String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.CREATE_FOLDER).
-								setHeaders("Content-Length", String.valueOf(body.length())).
-								build(body.getBytes());
+							String request = (new HTTP.HTTPBuilder()).setMethod("POST").
+									setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.CREATE_FOLDER).
+									setHeaders("Content-Length", String.valueOf(body.length())).
+									build(body.getBytes());
 
-						request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
-						network.sendBytes(request.getBytes("CP1251"));
+							network.sendBytes(request.getBytes("CP1251"));
 
-						network.close();
+							network.close();
 
-						getFiles(activity, fileData, adapter, login, password, currentPath);
+							getFiles(activity, fileData, adapter, login, password, currentPath);
+						}
 					}
 					else
 					{
