@@ -37,6 +37,12 @@
     <string name="downloaded_files">Скачанные файлы</string>
     <string name="previous_folder">Предыдущая папка</string>
 
+    <!-- String constants for DownloadedFilesActivity -->
+    <string name="downloaded_files_title">Все скачанные файлы</string>
+
+    <string name="downloaded_files_name_title">Имя</string>
+    <string name="downloaded_files_size_title">Размер</string>
+
     <!-- String constants for errors -->
     <string name="empty_login">Логин не может быть пустым</string>
     <string name="empty_password">Пароль не может быть пустым</string>
