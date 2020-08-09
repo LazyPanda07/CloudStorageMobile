@@ -598,7 +598,14 @@ public class NetworkFunctions
 
 								getFiles(activity, fileData, adapter, login, password, currentPath);
 
-								//TODO: success message
+								activity.runOnUiThread(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										Toast.makeText(activity.getApplicationContext(), "Файл " + fileName + " успешно удален", Toast.LENGTH_LONG).show();
+									}
+								});
 							}
 							else
 							{
@@ -696,5 +703,4 @@ public class NetworkFunctions
 			}
 		}).start();
 	}
-
 }

@@ -24,7 +24,7 @@ public class SystemFileData
 
 	public String getFileExtension()
 	{
-		return this.getFileName().substring(getFileName().lastIndexOf('.') + 1);
+		return this.getFileName().substring(this.getFileName().lastIndexOf('.') + 1);
 	}
 
 	public long getFileSize()
