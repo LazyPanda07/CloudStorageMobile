@@ -14,6 +14,7 @@ public class Constants
 
 	public static final String DATA_DELIMITER = "/";
 	public static final String DATA_PART_DELIMITER = "|";
+	public static final char WINDOWS_SEPARATOR = '\\';
 
 	public static final int MAX_FILES_FROM_EXPLORER = 10;
 

@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 //TODO: create snackbar on bottom of the screen with message, cancel button and circle progress bar or standard progress bar with percentage line
+//TODO: add else to condition if (setPath(network, currentPath) && waitResponseSnackbar.isShown()), waitResponseSanckbar must call dismiss
 public class NetworkFunctions
 {
 	public enum StorageType
@@ -151,12 +152,14 @@ public class NetworkFunctions
 
 					if (login.isEmpty())
 					{
+						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, R.string.empty_login);
 						network.close();
 						return;
 					}
 					else if (password.isEmpty())
 					{
+						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, R.string.empty_password);
 						network.close();
 						return;
@@ -173,6 +176,7 @@ public class NetworkFunctions
 
 					if (!waitResponseSnackbar.isShown())
 					{
+						network.close();
 						return;
 					}
 
@@ -182,6 +186,7 @@ public class NetworkFunctions
 
 					if (parser.getHeaders().get("Error").equals("0"))
 					{
+						waitResponseSnackbar.dismiss();
 						network.close();
 
 						Intent intent = new Intent(activity.getApplicationContext(), CloudStorageActivity.class);
@@ -193,8 +198,8 @@ public class NetworkFunctions
 					}
 					else
 					{
+						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, parser.getBody());
-
 						network.close();
 					}
 
@@ -231,18 +236,21 @@ public class NetworkFunctions
 
 					if (login.isEmpty())
 					{
+						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, R.string.empty_login);
 						network.close();
 						return;
 					}
 					else if (password.isEmpty())
 					{
+						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, R.string.empty_password);
 						network.close();
 						return;
 					}
 					else if (!password.equals(repeatPassword))
 					{
+						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, R.string.password_mismatch);
 						network.close();
 						return;
@@ -257,7 +265,7 @@ public class NetworkFunctions
 
 					request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
-					if(!waitResponseSnackbar.isShown())
+					if (!waitResponseSnackbar.isShown())
 					{
 						return;
 					}
@@ -268,6 +276,7 @@ public class NetworkFunctions
 
 					if (parser.getHeaders().get("Error").equals("0"))
 					{
+						waitResponseSnackbar.dismiss();
 						network.close();
 
 						Intent intent = new Intent(activity.getApplicationContext(), CloudStorageActivity.class);
@@ -283,8 +292,8 @@ public class NetworkFunctions
 					}
 					else
 					{
+						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, parser.getBody());
-
 						network.close();
 					}
 
@@ -292,6 +301,7 @@ public class NetworkFunctions
 				}
 				catch (IOException e)
 				{
+					waitResponseSnackbar.dismiss();
 					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
@@ -299,8 +309,10 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String login, final String password, final String[] currentPath)
+	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String login, final String password, final String[] currentPath, View parent)
 	{
+		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -308,17 +320,25 @@ public class NetworkFunctions
 			{
 				try
 				{
+					waitResponseSnackbar.show();
+
 					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 
-					if (authorization(network, login, password))
+					if (authorization(network, login, password) && waitResponseSnackbar.isShown())
 					{
 						String request = (new HTTP.HTTPBuilder()).setMethod("POST").
 								setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.SHOW_ALL_FILES_IN_DIRECTORY).
 								build();
 
-						if (setPath(network, currentPath))
+						if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 						{
 							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+							if (!waitResponseSnackbar.isShown())
+							{
+								network.close();
+								return;
+							}
 
 							network.sendBytes(request.getBytes());
 
@@ -387,9 +407,11 @@ public class NetworkFunctions
 					}
 
 					network.close();
+					waitResponseSnackbar.dismiss();
 				}
 				catch (IOException e)
 				{
+					waitResponseSnackbar.dismiss();
 					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
@@ -397,8 +419,10 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void downloadFile(final AppCompatActivity activity, final String fileName, final long fileSize, final String login, final String password, final String[] currentPath)
+	public static void downloadFile(final AppCompatActivity activity, final String fileName, final long fileSize, final String login, final String password, final String[] currentPath, View parent)
 	{
+		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -414,14 +438,18 @@ public class NetworkFunctions
 
 					if (isCreated | storage.exists())
 					{
+						waitResponseSnackbar.show();
+
 						Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 						long offset = 0;
 						FileOutputStream out = new FileOutputStream(storage);
 
-						if (authorization(network, login, password))
+						if (authorization(network, login, password) && waitResponseSnackbar.isShown())
 						{
-							if (setPath(network, currentPath))
+							if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 							{
+								waitResponseSnackbar.dismiss();
+
 								while (true)
 								{
 									String request = (new HTTP.HTTPBuilder()).setMethod("POST").
@@ -460,6 +488,7 @@ public class NetworkFunctions
 				}
 				catch (IOException e)
 				{
+					waitResponseSnackbar.dismiss();
 					e.printStackTrace();
 				}
 
@@ -484,8 +513,10 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
+	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
 	{
+		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -496,12 +527,16 @@ public class NetworkFunctions
 
 				try
 				{
+					waitResponseSnackbar.show();
+
 					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 
-					if (authorization(network, login, password))
+					if (authorization(network, login, password) && waitResponseSnackbar.isShown())
 					{
-						if (setPath(network, currentPath))
+						if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 						{
+							waitResponseSnackbar.dismiss();
+
 							do
 							{
 								byte[] data;
@@ -574,7 +609,7 @@ public class NetworkFunctions
 
 								network.close();
 
-								getFiles(activity, fileData, adapter, login, password, currentPath);
+								getFiles(activity, fileData, adapter, login, password, currentPath, parent);
 							}
 						}
 					}
@@ -585,6 +620,7 @@ public class NetworkFunctions
 				}
 				catch (IOException e)
 				{
+					waitResponseSnackbar.dismiss();
 					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
@@ -592,8 +628,10 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void removeFile(final AppCompatActivity activity, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
+	public static void removeFile(final AppCompatActivity activity, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
 	{
+		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -601,11 +639,13 @@ public class NetworkFunctions
 			{
 				try
 				{
+					waitResponseSnackbar.show();
+
 					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 
-					if (authorization(network, login, password))
+					if (authorization(network, login, password) && waitResponseSnackbar.isShown())
 					{
-						if (setPath(network, currentPath))
+						if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 						{
 							String request = (new HTTP.HTTPBuilder()).setMethod("POST").
 									setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.REMOVE_FILE).
@@ -614,15 +654,23 @@ public class NetworkFunctions
 
 							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
+							if (!waitResponseSnackbar.isShown())
+							{
+								network.close();
+								return;
+							}
+
 							network.sendBytes(request.getBytes());
 
 							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+
+							waitResponseSnackbar.dismiss();
 
 							if (parser.getHeaders().get("Error").equals("0"))
 							{
 								network.close();
 
-								getFiles(activity, fileData, adapter, login, password, currentPath);
+								getFiles(activity, fileData, adapter, login, password, currentPath, parent);
 
 								activity.runOnUiThread(new Runnable()
 								{
@@ -636,7 +684,6 @@ public class NetworkFunctions
 							else
 							{
 								ErrorHandling.showError(activity, "Не удалось удалить " + fileName);
-
 								network.close();
 							}
 						}
@@ -644,6 +691,7 @@ public class NetworkFunctions
 				}
 				catch (IOException e)
 				{
+					waitResponseSnackbar.dismiss();
 					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
@@ -651,8 +699,10 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void createFolder(final AppCompatActivity activity, final String folderName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
+	public static void createFolder(final AppCompatActivity activity, final String folderName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
 	{
+		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -660,11 +710,13 @@ public class NetworkFunctions
 			{
 				try
 				{
+					waitResponseSnackbar.show();
+
 					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 
-					if (authorization(network, login, password))
+					if (authorization(network, login, password) && waitResponseSnackbar.isShown())
 					{
-						if (setPath(network, currentPath))
+						if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 						{
 							String body = "folder=" + folderName;
 
@@ -675,11 +727,19 @@ public class NetworkFunctions
 
 							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
+							if (!waitResponseSnackbar.isShown())
+							{
+								network.close();
+								return;
+							}
+
 							network.sendBytes(request.getBytes("CP1251"));
 
 							network.close();
 
-							getFiles(activity, fileData, adapter, login, password, currentPath);
+							waitResponseSnackbar.dismiss();
+
+							getFiles(activity, fileData, adapter, login, password, currentPath, parent);
 						}
 					}
 					else
@@ -689,6 +749,7 @@ public class NetworkFunctions
 				}
 				catch (IOException e)
 				{
+					waitResponseSnackbar.dismiss();
 					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
@@ -697,21 +758,21 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void nextFolder(final AppCompatActivity activity, final String folderName, final String[] currentPath, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter)
+	public static void nextFolder(final AppCompatActivity activity, final String folderName, final String[] currentPath, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final View parent)
 	{
 		new Thread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				currentPath[0] = currentPath[0] + "\\" + folderName;
+				currentPath[0] = currentPath[0] + Constants.WINDOWS_SEPARATOR + folderName;
 
-				getFiles(activity, fileData, adapter, login, password, currentPath);
+				getFiles(activity, fileData, adapter, login, password, currentPath, parent);
 			}
 		}).start();
 	}
 
-	public static void prevFolder(final AppCompatActivity activity, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath)
+	public static void prevFolder(final AppCompatActivity activity, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
 	{
 		new Thread(new Runnable()
 		{
@@ -723,9 +784,9 @@ public class NetworkFunctions
 					return;
 				}
 
-				currentPath[0] = currentPath[0].substring(0, currentPath[0].lastIndexOf('\\'));
+				currentPath[0] = currentPath[0].substring(0, currentPath[0].lastIndexOf(Constants.WINDOWS_SEPARATOR));
 
-				getFiles(activity, fileData, adapter, login, password, currentPath);
+				getFiles(activity, fileData, adapter, login, password, currentPath, parent);
 			}
 		}).start();
 	}
