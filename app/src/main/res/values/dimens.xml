@@ -14,5 +14,6 @@
     <dimen name="buttons">14sp</dimen>
     <dimen name="textInput">16sp</dimen>
     <dimen name="textViews">16sp</dimen>
+    <dimen name="progress_bar_margin">32dp</dimen>
 
 </resources>

@@ -52,4 +52,10 @@
     <string name="cast_error">Не удалось отобразить ошибку</string>
     <string name="connection_error">Не удалось подключиться к серверу</string>
 
+    <!-- String constants for snackbars -->
+    <string name="wait_server_response">Ожидание ответа от сервера</string>
+    <string name="snackbar_text_load_file">Скачивание файла %s</string>
+    <string name="snackbar_text_upload_file">Загрузка файла %s</string>
+    <string name="cancel_operation">Отмена операции</string>
+
 </resources>

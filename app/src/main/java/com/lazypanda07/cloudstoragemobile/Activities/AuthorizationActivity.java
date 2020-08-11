@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.lazypanda07.cloudstoragemobile.HideKeyboard;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 
@@ -22,7 +23,9 @@ public class AuthorizationActivity extends AppCompatActivity
 
 	public void authorization(View view)
 	{
-		NetworkFunctions.authorization(ref);
+		HideKeyboard.hideKeyboard(ref);
+
+		NetworkFunctions.authorization(ref, findViewById(R.id.authorization));
 	}
 
 	public void toRegistrationActivity(View view)

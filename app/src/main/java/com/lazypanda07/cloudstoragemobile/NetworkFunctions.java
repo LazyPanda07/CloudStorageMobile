@@ -2,6 +2,7 @@ package com.lazypanda07.cloudstoragemobile;
 
 import android.content.Intent;
 import android.os.Environment;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.lazypanda07.cloudstoragemobile.Activities.CloudStorageActivity;
 import com.lazypanda07.cloudstoragemobile.CustomListView.FileData;
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
+import com.lazypanda07.cloudstoragemobile.NetworkProcessingUI.WaitResponseSnackbar;
 import com.lazypanda07.networklib.Constants;
 import com.lazypanda07.networklib.HTTP;
 import com.lazypanda07.networklib.Network;
@@ -22,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+//TODO: create snackbar on bottom of the screen with message, cancel button and circle progress bar or standard progress bar with percentage line
 public class NetworkFunctions
 {
 	public enum StorageType
@@ -128,8 +131,10 @@ public class NetworkFunctions
 		}
 	}
 
-	public static void authorization(final AppCompatActivity activity)
+	public static void authorization(final AppCompatActivity activity, View parent)
 	{
+		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -137,6 +142,8 @@ public class NetworkFunctions
 			{
 				try
 				{
+					waitResponseSnackbar.show();
+
 					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 
 					String login = ((EditText) activity.findViewById(R.id.authorization_login)).getText().toString();
@@ -164,6 +171,11 @@ public class NetworkFunctions
 
 					request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
+					if (!waitResponseSnackbar.isShown())
+					{
+						return;
+					}
+
 					network.sendBytes(request.getBytes());
 
 					final HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
@@ -185,9 +197,12 @@ public class NetworkFunctions
 
 						network.close();
 					}
+
+					waitResponseSnackbar.dismiss();
 				}
 				catch (IOException e)
 				{
+					waitResponseSnackbar.dismiss();
 					ErrorHandling.showError(activity, R.string.connection_error);
 					e.printStackTrace();
 				}
@@ -195,8 +210,10 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void registration(final AppCompatActivity activity)
+	public static void registration(final AppCompatActivity activity, View parent)
 	{
+		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -204,6 +221,8 @@ public class NetworkFunctions
 			{
 				try
 				{
+					waitResponseSnackbar.show();
+
 					Network network = new Network(Constants.APIServerIp, Constants.APIServerPort);
 
 					String login = ((EditText) activity.findViewById(R.id.registration_login)).getText().toString();
@@ -238,6 +257,11 @@ public class NetworkFunctions
 
 					request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
 
+					if(!waitResponseSnackbar.isShown())
+					{
+						return;
+					}
+
 					network.sendBytes(request.getBytes());
 
 					final HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
@@ -263,6 +287,8 @@ public class NetworkFunctions
 
 						network.close();
 					}
+
+					waitResponseSnackbar.dismiss();
 				}
 				catch (IOException e)
 				{
