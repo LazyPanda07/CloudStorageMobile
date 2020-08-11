@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 //TODO: create snackbar on bottom of the screen with message, cancel button and circle progress bar or standard progress bar with percentage line
-//TODO: add else to condition if (setPath(network, currentPath) && waitResponseSnackbar.isShown()), waitResponseSanckbar must call dismiss
 public class NetworkFunctions
 {
 	public enum StorageType
