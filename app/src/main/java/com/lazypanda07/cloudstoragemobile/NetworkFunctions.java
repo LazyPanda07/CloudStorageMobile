@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.lazypanda07.cloudstoragemobile.Activities.CloudStorageActivity;
 import com.lazypanda07.cloudstoragemobile.CustomListView.FileData;
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
+import com.lazypanda07.cloudstoragemobile.NetworkProcessingUI.TransferFileSnackbar;
 import com.lazypanda07.cloudstoragemobile.NetworkProcessingUI.WaitResponseSnackbar;
 import com.lazypanda07.networklib.Constants;
 import com.lazypanda07.networklib.HTTP;
@@ -24,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-//TODO: create snackbar on bottom of the screen with message, cancel button and circle progress bar or standard progress bar with percentage line
 public class NetworkFunctions
 {
 	public enum StorageType
@@ -421,6 +421,9 @@ public class NetworkFunctions
 	public static void downloadFile(final AppCompatActivity activity, final String fileName, final long fileSize, final String login, final String password, final String[] currentPath, View parent)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+		final TransferFileSnackbar transferFileSnackbar = new TransferFileSnackbar(parent, String.format(parent.getContext().getResources().getString(R.string.snackbar_text_load_file), fileName));
+
+		transferFileSnackbar.setRange((int) fileSize);
 
 		new Thread(new Runnable()
 		{
@@ -449,6 +452,25 @@ public class NetworkFunctions
 							{
 								waitResponseSnackbar.dismiss();
 
+								transferFileSnackbar.show();
+
+								while (true)
+								{
+									if (transferFileSnackbar.isShown())
+									{
+										break;
+									}
+								}
+
+								try
+								{
+									Thread.sleep(500);
+								}
+								catch (InterruptedException e)
+								{
+									e.printStackTrace();
+								}
+
 								while (true)
 								{
 									String request = (new HTTP.HTTPBuilder()).setMethod("POST").
@@ -458,6 +480,21 @@ public class NetworkFunctions
 											build();
 
 									request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+									if (!transferFileSnackbar.isShown())
+									{
+										activity.runOnUiThread(new Runnable()
+										{
+											@Override
+											public void run()
+											{
+												Toast.makeText(activity.getApplicationContext(), "Че за нах 470", Toast.LENGTH_LONG).show();
+											}
+										});
+										storage.delete();
+										network.close();
+										return;
+									}
 
 									network.sendBytes(request.getBytes("CP1251"));
 
@@ -469,12 +506,25 @@ public class NetworkFunctions
 
 									offset += parser.getBody().length;
 
+									transferFileSnackbar.setProgress((int) offset);
+
 									if (checkTotalFileSize != null)
 									{
 										totalFileSize = Long.parseLong(checkTotalFileSize);
 										break;
 									}
 								}
+
+								try
+								{
+									Thread.sleep(1000);
+								}
+								catch (InterruptedException e)
+								{
+									e.printStackTrace();
+								}
+
+								transferFileSnackbar.dismiss();
 							}
 							else
 							{
@@ -523,6 +573,9 @@ public class NetworkFunctions
 	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
+		final TransferFileSnackbar transferFileSnackbar = new TransferFileSnackbar(parent, String.format(parent.getContext().getResources().getString(R.string.snackbar_text_upload_file), fileName));
+
+		transferFileSnackbar.setRange(fileSize);
 
 		new Thread(new Runnable()
 		{
@@ -543,6 +596,16 @@ public class NetworkFunctions
 						if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 						{
 							waitResponseSnackbar.dismiss();
+
+							transferFileSnackbar.show();
+
+							while (true)
+							{
+								if (transferFileSnackbar.isShown())
+								{
+									break;
+								}
+							}
 
 							do
 							{
@@ -593,7 +656,20 @@ public class NetworkFunctions
 								network.sendBytes(message.getBytes(StandardCharsets.ISO_8859_1));
 
 								offset += nextOffset;
+
+								transferFileSnackbar.setProgress(offset);
 							} while (!isLast);
+
+							try
+							{
+								Thread.sleep(1000);
+							}
+							catch (InterruptedException e)
+							{
+								e.printStackTrace();
+							}
+
+							transferFileSnackbar.dismiss();
 
 							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
 
