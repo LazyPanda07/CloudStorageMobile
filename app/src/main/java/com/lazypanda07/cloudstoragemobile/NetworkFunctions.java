@@ -477,6 +477,14 @@ public class NetworkFunctions
 									}
 								}
 							}
+							else
+							{
+								waitResponseSnackbar.dismiss();
+							}
+						}
+						else
+						{
+							waitResponseSnackbar.dismiss();
 						}
 
 						network.close();
@@ -612,10 +620,15 @@ public class NetworkFunctions
 								getFiles(activity, fileData, adapter, login, password, currentPath, parent);
 							}
 						}
+						else
+						{
+							waitResponseSnackbar.dismiss();
+						}
 					}
 					else
 					{
 						network.close();
+						waitResponseSnackbar.dismiss();
 					}
 				}
 				catch (IOException e)
@@ -687,6 +700,14 @@ public class NetworkFunctions
 								network.close();
 							}
 						}
+						else
+						{
+							waitResponseSnackbar.dismiss();
+						}
+					}
+					else
+					{
+						waitResponseSnackbar.dismiss();
 					}
 				}
 				catch (IOException e)
@@ -741,10 +762,15 @@ public class NetworkFunctions
 
 							getFiles(activity, fileData, adapter, login, password, currentPath, parent);
 						}
+						else
+						{
+							waitResponseSnackbar.dismiss();
+						}
 					}
 					else
 					{
 						network.close();
+						waitResponseSnackbar.dismiss();
 					}
 				}
 				catch (IOException e)
