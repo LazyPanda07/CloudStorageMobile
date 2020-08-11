@@ -483,14 +483,6 @@ public class NetworkFunctions
 
 									if (!transferFileSnackbar.isShown())
 									{
-										activity.runOnUiThread(new Runnable()
-										{
-											@Override
-											public void run()
-											{
-												Toast.makeText(activity.getApplicationContext(), "Че за нах 470", Toast.LENGTH_LONG).show();
-											}
-										});
 										storage.delete();
 										network.close();
 										return;
