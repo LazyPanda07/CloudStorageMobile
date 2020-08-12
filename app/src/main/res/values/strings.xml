@@ -30,14 +30,14 @@
     <string name="cancel_folder_name">Отменить</string>
 
     <!-- String constants for menus in CloudStorageActivity -->
-    <string name="download_file_title">Скачать файл</string>
-    <string name="remove_file_title">Удалить файл</string>
-    <string name="settings_title">Настройки</string>
-    <string name="create_folder">Новая папка</string>
-    <string name="upload_file">Загрузить файл</string>
-    <string name="downloaded_files">Скачанные файлы</string>
-    <string name="previous_folder">Предыдущая папка</string>
-    <string name="exit_from_account">Выйти из аккаунта</string>
+    <string name="cloud_storage_download_file_title">Скачать файл</string>
+    <string name="cloud_storage_remove_file_title">Удалить файл</string>
+    <string name="cloud_storage_settings_title">Настройки</string>
+    <string name="cloud_storage_create_folder">Новая папка</string>
+    <string name="cloud_storage_upload_file">Загрузить файл</string>
+    <string name="cloud_storage_downloaded_files">Скачанные файлы</string>
+    <string name="cloud_storage_previous_folder">Предыдущая папка</string>
+    <string name="cloud_storage_exit_from_account">Выйти из аккаунта</string>
 
     <!-- String constants for DownloadedFilesActivity -->
     <string name="downloaded_files_activity_title">Все скачанные файлы</string>
@@ -47,6 +47,10 @@
 
     <!-- String constants for SettingsActivity -->
     <string name="settings_activity_title">Настройки</string>
+
+    <!-- String constants for menus in DownloadedFilesActivity -->
+    <string name="downloaded_files_upload_file_title">Загрузить файл</string>
+    <string name="downloaded_files_remove_file_title">Удалить файл</string>
 
     <!-- String constants for errors -->
     <string name="empty_login">Логин не может быть пустым</string>

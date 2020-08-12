@@ -63,7 +63,7 @@ public class CloudStorageActivity extends AppCompatActivity
 		currentPath = new String[1];
 		currentPath[0] = "Home";
 		fileData = new ArrayList<>();
-		adapter = new PortraitCloudStorageListViewAdapter(getApplicationContext(), fileData);
+		adapter = new PortraitCloudStorageListViewAdapter(getBaseContext(), fileData);
 		drawerLayout = findViewById(R.id.drawer_layout);
 		NavigationView navigationView = findViewById(R.id.navigation_view);
 		Toolbar toolbar = findViewById(R.id.toolbar);
@@ -173,8 +173,8 @@ public class CloudStorageActivity extends AppCompatActivity
 
 	private void showPopupMenuOnLayoutLongClick(final View view)
 	{
-		PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
-		popupMenu.inflate(R.menu.on_layout_long_click_popup_menu);
+		PopupMenu popupMenu = new PopupMenu(getBaseContext(), view);
+		popupMenu.inflate(R.menu.cloud_storage_on_layout_long_click_popup_menu);
 
 		popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
 		{
@@ -190,8 +190,8 @@ public class CloudStorageActivity extends AppCompatActivity
 
 	private void showPopupMenuOnItemLongClick(final View view)
 	{
-		PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
-		popupMenu.inflate(R.menu.on_item_long_click_popup_menu);
+		PopupMenu popupMenu = new PopupMenu(getBaseContext(), view);
+		popupMenu.inflate(R.menu.files_list_on_item_long_click_popup_menu);
 
 		popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
 		{
@@ -234,10 +234,12 @@ public class CloudStorageActivity extends AppCompatActivity
 
 	private boolean menuItemsEventsHandler(MenuItem item)
 	{
+		Intent intent;
+
 		switch (item.getItemId())
 		{
 			case R.id.upload_file:
-				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+				intent = new Intent(Intent.ACTION_GET_CONTENT);
 				intent.setType("*/*");
 				intent.addCategory(Intent.CATEGORY_OPENABLE);
 
@@ -253,7 +255,11 @@ public class CloudStorageActivity extends AppCompatActivity
 				return true;
 
 			case R.id.downloaded_files:
-				startActivity(new Intent(getApplicationContext(), DownloadedFilesActivity.class));
+				intent = new Intent(getBaseContext(), DownloadedFilesActivity.class);
+
+				intent.putExtra("login", login);
+
+				startActivity(intent);
 
 				drawerLayout.closeDrawer(GravityCompat.START);
 

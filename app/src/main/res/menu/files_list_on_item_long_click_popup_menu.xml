@@ -5,16 +5,16 @@
 
         <item
             android:id="@+id/download_file"
-            android:title="@string/download_file_title" />
+            android:title="@string/cloud_storage_download_file_title" />
 
         <item
             android:id="@+id/remove_file"
-            android:title="@string/remove_file_title" />
+            android:title="@string/cloud_storage_remove_file_title" />
 
         <!-- Temporary solution -->
         <item
             android:id="@+id/upload_file"
-            android:title="@string/upload_file" />
+            android:title="@string/cloud_storage_upload_file" />
 
     </group>
 

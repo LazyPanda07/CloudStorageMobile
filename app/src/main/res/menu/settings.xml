@@ -5,11 +5,11 @@
 
         <item
             android:id="@+id/settings"
-            android:title="@string/settings_title" />
+            android:title="@string/cloud_storage_settings_title" />
 
         <item
             android:id="@+id/exit_from_account"
-            android:title="@string/exit_from_account" />
+            android:title="@string/cloud_storage_exit_from_account" />
 
     </group>
 

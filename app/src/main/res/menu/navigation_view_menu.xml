@@ -5,15 +5,15 @@
 
         <item
             android:id="@+id/create_folder"
-            android:title="@string/create_folder" />
+            android:title="@string/cloud_storage_create_folder" />
 
         <item
             android:id="@+id/upload_file"
-            android:title="@string/upload_file" />
+            android:title="@string/cloud_storage_upload_file" />
 
         <item
             android:id="@+id/downloaded_files"
-            android:title="@string/downloaded_files" />
+            android:title="@string/cloud_storage_downloaded_files" />
 
     </group>
 
@@ -21,11 +21,11 @@
 
         <item
             android:id="@+id/settings"
-            android:title="@string/settings_title" />
+            android:title="@string/cloud_storage_settings_title" />
 
         <item
             android:id="@+id/exit_from_account"
-            android:title="@string/exit_from_account" />
+            android:title="@string/cloud_storage_exit_from_account" />
 
     </group>
 

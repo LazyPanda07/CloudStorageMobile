@@ -432,12 +432,19 @@ public class NetworkFunctions
 			public void run()
 			{
 				File storage = activity.getApplicationContext().getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS)[storageType.ordinal()];
-				storage = new File(storage, fileName);
+				storage = new File(storage, login);
+
 				long totalFileSize = 0;
 
 				try
 				{
-					boolean isCreated = storage.createNewFile();
+					boolean isCreated = storage.mkdirs();
+
+					if (isCreated)
+					{
+						storage = new File(storage, fileName);
+						isCreated = storage.createNewFile();
+					}
 
 					if (isCreated | storage.exists())
 					{

@@ -2,10 +2,13 @@ package com.lazypanda07.cloudstoragemobile.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,11 +22,14 @@ import com.lazypanda07.cloudstoragemobile.R;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.lazypanda07.cloudstoragemobile.NetworkFunctions.storageType;
+
 public class DownloadedFilesActivity extends AppCompatActivity
 {
 	private final AppCompatActivity ref = this;
 	private ArrayList<SystemFileData> data;
 	private PortraitDownloadedFilesListViewAdapter adapter;
+	private String login;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -35,7 +41,9 @@ public class DownloadedFilesActivity extends AppCompatActivity
 		ListView downloadedFilesList = findViewById(R.id.downloaded_files_list);
 		data = new ArrayList<>();
 		adapter = new PortraitDownloadedFilesListViewAdapter(getApplicationContext(), data);
-		File path = getApplicationContext().getExternalFilesDir("Download");
+		login = getIntent().getStringExtra("login");
+		File path = getApplicationContext().getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS)[storageType.ordinal()];
+		path = new File(path, login);
 
 		downloadedFilesList.setAdapter(adapter);
 
@@ -79,6 +87,55 @@ public class DownloadedFilesActivity extends AppCompatActivity
 			}
 		});
 
+		downloadedFilesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+		{
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
+			{
+				showPopupMenuOnItemLongClick(view, i);
+
+				return true;
+			}
+		});
 		//TODO: onItemLongClickListener upload file, remove file
+	}
+
+	private void showPopupMenuOnItemLongClick(final View view, final int i)
+	{
+		PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
+		popupMenu.inflate(R.menu.downloaded_files_list_on_item_long_click_popup_menu);
+
+		popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+		{
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem)
+			{
+				switch (menuItem.getItemId())
+				{
+					case R.id.remove_file:
+						File file = data.get(i).file;
+
+						if (file.delete())
+						{
+							data.remove(i);
+
+							adapter.notifyDataSetChanged();
+
+							return true;
+						}
+
+						return false;
+
+					case R.id.upload_file:
+						//TODO: upload file through special activity
+
+						break;
+				}
+
+				return false;
+			}
+		});
+
+		popupMenu.show();
 	}
 }

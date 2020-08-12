@@ -39,7 +39,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@color/colorWhite"
-                    android:contentDescription="@string/previous_folder"
+                    android:contentDescription="@string/cloud_storage_previous_folder"
                     android:onClick="previousFolder"
                     android:src="@drawable/ic_arrow_back" />
 
