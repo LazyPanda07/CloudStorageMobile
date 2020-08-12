@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 public class NetworkFunctions
 {
+	//TODO: create settings menu and database for settings
 	public enum StorageType
 	{
 		INTERNAL,

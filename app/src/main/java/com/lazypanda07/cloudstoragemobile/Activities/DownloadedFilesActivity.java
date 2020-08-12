@@ -78,5 +78,7 @@ public class DownloadedFilesActivity extends AppCompatActivity
 				startActivity(intent);
 			}
 		});
+
+		//TODO: onItemLongClickListener upload file, remove file
 	}
 }

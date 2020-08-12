@@ -36,6 +36,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+//TODO: add activity for open file with CloudStorageMobile
+//TODO: add current user name on each activity
+//TODO: add multiple upload files
+//TODO: add refresh button
+//TODO: add menu item exit from account
+//TODO: add choose account on choose file from system
+//TODO: add custom file path in Download folder must be like Download/$USER_NAME/$COPY_CURRENT_PATH/$FILE_NAME
 public class CloudStorageActivity extends AppCompatActivity
 {
 	private AppCompatActivity ref = this;
@@ -112,7 +119,7 @@ public class CloudStorageActivity extends AppCompatActivity
 				}
 				else    //file
 				{
-
+					//TODO: open file
 				}
 			}
 		});
@@ -226,6 +233,8 @@ public class CloudStorageActivity extends AppCompatActivity
 
 				startActivityForResult(Intent.createChooser(intent, getApplicationContext().getResources().getString(R.string.choose_file)), Constants.GET_FILE);
 
+				drawerLayout.closeDrawer(GravityCompat.START);
+
 				return true;
 
 			case R.id.create_folder:
@@ -235,6 +244,8 @@ public class CloudStorageActivity extends AppCompatActivity
 
 			case R.id.downloaded_files:
 				startActivity(new Intent(getApplicationContext(), DownloadedFilesActivity.class));
+
+				drawerLayout.closeDrawer(GravityCompat.START);
 
 				return true;
 		}
@@ -323,6 +334,10 @@ public class CloudStorageActivity extends AppCompatActivity
 			{
 				e.printStackTrace();
 			}
+		}
+		else if (resultCode == RESULT_CANCELED)
+		{
+			return;
 		}
 		else
 		{

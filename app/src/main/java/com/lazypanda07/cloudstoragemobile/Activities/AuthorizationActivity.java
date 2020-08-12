@@ -10,6 +10,7 @@ import com.lazypanda07.cloudstoragemobile.HideKeyboard;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 
+//TODO: add database with automated authorization
 public class AuthorizationActivity extends AppCompatActivity
 {
 	private final AppCompatActivity ref = this;
