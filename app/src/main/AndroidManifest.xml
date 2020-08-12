@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".Activities.SettingsActivity"></activity>
         <activity android:name=".Activities.DownloadedFilesActivity" />
         <activity android:name=".Activities.CloudStorageActivity" />
         <activity android:name=".Activities.RegistrationActivity" />
@@ -28,13 +29,10 @@
             android:authorities="${applicationId}"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider_paths" />
-
         </provider>
-
     </application>
 
 </manifest>

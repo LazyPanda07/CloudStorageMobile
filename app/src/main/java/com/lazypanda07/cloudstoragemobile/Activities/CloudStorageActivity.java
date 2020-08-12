@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -69,7 +70,7 @@ public class CloudStorageActivity extends AppCompatActivity
 		final ActionBar actionBar;
 		toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
 		final ListView filesList = findViewById(R.id.files_list);
-		Intent intent = getIntent();
+		final Intent intent = getIntent();
 
 		login = intent.getStringExtra("login");
 		password = intent.getStringExtra("password");
@@ -159,6 +160,15 @@ public class CloudStorageActivity extends AppCompatActivity
 
 			}
 		});
+
+		toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener()
+		{
+			@Override
+			public boolean onMenuItemClick(MenuItem item)
+			{
+				return menuItemsEventsHandler(item);
+			}
+		});
 	}
 
 	private void showPopupMenuOnLayoutLongClick(final View view)
@@ -246,6 +256,23 @@ public class CloudStorageActivity extends AppCompatActivity
 				startActivity(new Intent(getApplicationContext(), DownloadedFilesActivity.class));
 
 				drawerLayout.closeDrawer(GravityCompat.START);
+
+				return true;
+
+			case R.id.settings:
+				startActivity(new Intent(getBaseContext(), SettingsActivity.class));
+
+				return true;
+
+			case R.id.exit_from_account:
+				Intent toAuthorizationActivity = new Intent(getBaseContext(), AuthorizationActivity.class);
+
+				login = "";
+				password = "";
+
+				toAuthorizationActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+				startActivity(toAuthorizationActivity);
 
 				return true;
 		}
@@ -343,6 +370,13 @@ public class CloudStorageActivity extends AppCompatActivity
 		{
 			Toast.makeText(getApplicationContext(), "Ошибка", Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		getMenuInflater().inflate(R.menu.settings, menu);
+		return true;
 	}
 
 	public void previousFolder(View view)
