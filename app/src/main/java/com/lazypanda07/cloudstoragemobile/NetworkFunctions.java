@@ -438,9 +438,11 @@ public class NetworkFunctions
 
 				try
 				{
-					boolean isCreated = storage.mkdirs();
+					boolean isCreated = false;
 
-					if (isCreated)
+					storage.mkdirs();
+
+					if (storage.exists())
 					{
 						storage = new File(storage, fileName);
 						isCreated = storage.createNewFile();
