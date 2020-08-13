@@ -180,6 +180,15 @@ public class CloudStorageActivity extends AppCompatActivity
 				return menuItemsEventsHandler(item);
 			}
 		});
+
+		toolbar.findViewById(R.id.refresh).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				refresh();
+			}
+		});
 	}
 
 	private void showPopupMenuOnLayoutLongClick(final View view)
@@ -339,6 +348,11 @@ public class CloudStorageActivity extends AppCompatActivity
 		folderNameEdit.requestFocus();
 
 		builder.show();
+	}
+
+	private void refresh()
+	{
+		NetworkFunctions.getFiles(ref, fileData, adapter, login, password, currentPath, findViewById(R.id.cloud_storage_wrapper));
 	}
 
 	@Override

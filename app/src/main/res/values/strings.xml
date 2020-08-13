@@ -40,6 +40,7 @@
     <string name="cloud_storage_upload_file">Загрузить файл</string>
     <string name="cloud_storage_downloaded_files">Скачанные файлы</string>
     <string name="cloud_storage_previous_folder">Предыдущая папка</string>
+    <string name="cloud_storage_refresh_button">Обновить</string>
     <string name="cloud_storage_exit_from_account">Выйти из аккаунта</string>
 
     <!-- String constants for DownloadedFilesActivity -->
