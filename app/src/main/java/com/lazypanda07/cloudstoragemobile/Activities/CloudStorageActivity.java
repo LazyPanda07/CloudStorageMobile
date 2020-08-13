@@ -2,6 +2,7 @@ package com.lazypanda07.cloudstoragemobile.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -28,6 +30,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 import com.lazypanda07.cloudstoragemobile.CustomListView.FileData;
+import com.lazypanda07.cloudstoragemobile.CustomListView.LandscapeCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
@@ -50,7 +53,7 @@ public class CloudStorageActivity extends AppCompatActivity
 	private DrawerLayout drawerLayout;
 	private String[] currentPath;
 	private ArrayList<FileData> fileData;
-	private PortraitCloudStorageListViewAdapter adapter;
+	private BaseAdapter adapter;
 	private String login;
 	private String password;
 
@@ -63,7 +66,6 @@ public class CloudStorageActivity extends AppCompatActivity
 		currentPath = new String[1];
 		currentPath[0] = "Home";
 		fileData = new ArrayList<>();
-		adapter = new PortraitCloudStorageListViewAdapter(getBaseContext(), fileData);
 		drawerLayout = findViewById(R.id.drawer_layout);
 		NavigationView navigationView = findViewById(R.id.navigation_view);
 		Toolbar toolbar = findViewById(R.id.toolbar);
@@ -74,6 +76,15 @@ public class CloudStorageActivity extends AppCompatActivity
 
 		login = intent.getStringExtra("login");
 		password = intent.getStringExtra("password");
+
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+		{
+			adapter = new PortraitCloudStorageListViewAdapter(getBaseContext(), fileData);
+		}
+		else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+		{
+			adapter = new LandscapeCloudStorageListViewAdapter(getBaseContext(), fileData);
+		}
 
 		filesList.setAdapter(adapter);
 

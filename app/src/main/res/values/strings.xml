@@ -22,6 +22,9 @@
     <string name="cloud_storage_activity_title">CloudStorage</string>
 
     <string name="cloud_storage_name_type_title">Имя/Тип</string>
+    <string name="cloud_storage_name_title">Имя</string>
+    <string name="cloud_storage_type_title">Тип</string>
+    <string name="cloud_storage_date_of_change_title">Дата изменения</string>
     <string name="cloud_storage_size_title">Размер</string>
     <string name="choose_folder_name_title">Создание новой папки</string>
     <string name="choose_file">Выберите файл для загрузки</string>

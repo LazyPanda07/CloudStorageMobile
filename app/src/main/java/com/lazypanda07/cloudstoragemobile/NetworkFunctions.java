@@ -3,6 +3,7 @@ package com.lazypanda07.cloudstoragemobile;
 import android.content.Intent;
 import android.os.Environment;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -10,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.lazypanda07.cloudstoragemobile.Activities.CloudStorageActivity;
 import com.lazypanda07.cloudstoragemobile.CustomListView.FileData;
-import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.NetworkProcessingUI.TransferFileSnackbar;
 import com.lazypanda07.cloudstoragemobile.NetworkProcessingUI.WaitResponseSnackbar;
 import com.lazypanda07.networklib.Constants;
@@ -309,7 +309,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String login, final String password, final String[] currentPath, View parent)
+	public static void getFiles(final AppCompatActivity activity, final ArrayList<FileData> fileData, final BaseAdapter adapter, final String login, final String password, final String[] currentPath, View parent)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
 
@@ -570,7 +570,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
+	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final BaseAdapter adapter, final String[] currentPath, final View parent)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
 		final TransferFileSnackbar transferFileSnackbar = new TransferFileSnackbar(parent, String.format(parent.getContext().getResources().getString(R.string.snackbar_text_upload_file), fileName));
@@ -716,7 +716,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void removeFile(final AppCompatActivity activity, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
+	public static void removeFile(final AppCompatActivity activity, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final BaseAdapter adapter, final String[] currentPath, final View parent)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
 
@@ -795,7 +795,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void createFolder(final AppCompatActivity activity, final String folderName, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
+	public static void createFolder(final AppCompatActivity activity, final String folderName, final String login, final String password, final ArrayList<FileData> fileData, final BaseAdapter adapter, final String[] currentPath, final View parent)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
 
@@ -859,7 +859,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void nextFolder(final AppCompatActivity activity, final String folderName, final String[] currentPath, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final View parent)
+	public static void nextFolder(final AppCompatActivity activity, final String folderName, final String[] currentPath, final String login, final String password, final ArrayList<FileData> fileData, final BaseAdapter adapter, final View parent)
 	{
 		new Thread(new Runnable()
 		{
@@ -873,7 +873,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void prevFolder(final AppCompatActivity activity, final String login, final String password, final ArrayList<FileData> fileData, final PortraitCloudStorageListViewAdapter adapter, final String[] currentPath, final View parent)
+	public static void prevFolder(final AppCompatActivity activity, final String login, final String password, final ArrayList<FileData> fileData, final BaseAdapter adapter, final String[] currentPath, final View parent)
 	{
 		new Thread(new Runnable()
 		{
