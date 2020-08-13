@@ -71,4 +71,8 @@
     <string name="snackbar_text_upload_file">Загрузка файла %s</string>
     <string name="cancel_operation">Отмена операции</string>
 
+    <!-- String constants for SettingsActivity -->
+    <string name="settings_choose_storage">Скачивать файлы на внутреннюю память</string>
+    <string name="settings_auto_login">Автоматическая авторизация</string>
+
 </resources>

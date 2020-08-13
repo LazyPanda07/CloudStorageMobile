@@ -43,8 +43,6 @@ import java.util.ArrayList;
 //TODO: add activity for open file with CloudStorageMobile
 //TODO: add current user name on each activity
 //TODO: add multiple upload files
-//TODO: add refresh button
-//TODO: add menu item exit from account
 //TODO: add choose account on choose file from system
 //TODO: add custom file path in Download folder must be like Download/$USER_NAME/$COPY_CURRENT_PATH/$FILE_NAME
 public class CloudStorageActivity extends AppCompatActivity
