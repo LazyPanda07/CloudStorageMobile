@@ -1,6 +1,5 @@
 package com.lazypanda07.cloudstoragemobile.Activities;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Switch;
@@ -8,6 +7,7 @@ import android.widget.Switch;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 
@@ -24,6 +24,18 @@ public class SettingsActivity extends AppCompatActivity
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		final Switch chooseStorage = findViewById(R.id.choose_storage_switch);
 		final Switch autoLogin = findViewById(R.id.auto_login_switch);
+		final String login = getIntent().getStringExtra("login");
+		final UserSettingsSingleton instance = UserSettingsSingleton.getInstance();
+
+		if (instance.getStorageType(login).equals(NetworkFunctions.StorageType.INTERNAL))
+		{
+			chooseStorage.setChecked(true);
+		}
+		else
+		{
+			chooseStorage.setChecked(false);
+		}
+		autoLogin.setChecked(instance.getAutoLogin(login));
 
 		toolbar.setNavigationOnClickListener(new View.OnClickListener()
 		{
@@ -49,6 +61,8 @@ public class SettingsActivity extends AppCompatActivity
 				{
 					NetworkFunctions.storageType = NetworkFunctions.StorageType.SDCard;
 				}
+
+				instance.updateStorageType(login, NetworkFunctions.storageType);
 			}
 		});
 
@@ -57,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity
 			@Override
 			public void onClick(View view)
 			{
-				boolean isChecked = autoLogin.isChecked();
+				instance.updateAutoLogin(login, autoLogin.isChecked());
 			}
 		});
 	}

@@ -32,6 +32,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.lazypanda07.cloudstoragemobile.CustomListView.FileData;
 import com.lazypanda07.cloudstoragemobile.CustomListView.LandscapeCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
+import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 import com.lazypanda07.networklib.Constants;
@@ -71,9 +72,12 @@ public class CloudStorageActivity extends AppCompatActivity
 		toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
 		final ListView filesList = findViewById(R.id.files_list);
 		final Intent intent = getIntent();
+		UserSettingsSingleton instance = UserSettingsSingleton.getInstance();
 
 		login = intent.getStringExtra("login");
 		password = intent.getStringExtra("password");
+
+		instance.addNewUser(login, password);
 
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
@@ -284,7 +288,11 @@ public class CloudStorageActivity extends AppCompatActivity
 				return true;
 
 			case R.id.settings:
-				startActivity(new Intent(getBaseContext(), SettingsActivity.class));
+				intent = new Intent(getBaseContext(), SettingsActivity.class);
+
+				intent.putExtra("login", login);
+
+				startActivity(intent);
 
 				return true;
 
