@@ -52,6 +52,7 @@ public class PortraitDownloadedFilesListViewAdapter extends BaseAdapter
 		}
 
 		((TextView) result.findViewById(R.id.name)).setText(data.get(i).getFileName());
+		((TextView) result.findViewById(R.id.path)).setText(data.get(i).getStorageType());
 		((TextView) result.findViewById(R.id.size)).setText(tem);
 
 		return result;

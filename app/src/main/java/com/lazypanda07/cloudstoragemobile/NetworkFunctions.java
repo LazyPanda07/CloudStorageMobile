@@ -431,7 +431,23 @@ public class NetworkFunctions
 			@Override
 			public void run()
 			{
-				File storage = activity.getApplicationContext().getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS)[storageType.ordinal()];
+				File[] variants = activity.getApplicationContext().getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS);
+
+				if (variants.length == 1 && storageType.equals(StorageType.SDCard))
+				{
+					activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							Toast.makeText(activity.getApplicationContext(), R.string.sd_card_is_not_supported, Toast.LENGTH_LONG).show();
+						}
+					});
+
+					return;
+				}
+
+				File storage = variants[storageType.ordinal()];
 				storage = new File(storage, login);
 
 				long totalFileSize = 0;

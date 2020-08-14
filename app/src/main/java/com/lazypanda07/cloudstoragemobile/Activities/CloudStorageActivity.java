@@ -79,6 +79,15 @@ public class CloudStorageActivity extends AppCompatActivity
 
 		instance.addNewUser(login, password);
 
+		if (instance.getStorageType(login).equals(NetworkFunctions.StorageType.INTERNAL))
+		{
+			NetworkFunctions.storageType = NetworkFunctions.StorageType.INTERNAL;
+		}
+		else
+		{
+			NetworkFunctions.storageType = NetworkFunctions.StorageType.SDCard;
+		}
+
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
 			adapter = new PortraitCloudStorageListViewAdapter(getBaseContext(), fileData);

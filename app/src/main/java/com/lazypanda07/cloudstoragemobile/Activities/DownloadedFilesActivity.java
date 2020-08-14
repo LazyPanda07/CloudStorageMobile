@@ -17,12 +17,11 @@ import androidx.core.content.FileProvider;
 import com.lazypanda07.cloudstoragemobile.BuildConfig;
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitDownloadedFilesListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.CustomListView.SystemFileData;
+import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import static com.lazypanda07.cloudstoragemobile.NetworkFunctions.storageType;
 
 public class DownloadedFilesActivity extends AppCompatActivity
 {
@@ -42,21 +41,46 @@ public class DownloadedFilesActivity extends AppCompatActivity
 		data = new ArrayList<>();
 		adapter = new PortraitDownloadedFilesListViewAdapter(getApplicationContext(), data);
 		login = getIntent().getStringExtra("login");
-		File path = getApplicationContext().getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS)[storageType.ordinal()];
-		path = new File(path, login);
+		File[] variants = getApplicationContext().getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS);
+		File internalPath = variants[0];
+		File SDCardPath = null;
+
+		if (variants.length == 2)
+		{
+			SDCardPath = variants[1];
+
+			SDCardPath = new File(SDCardPath, login);
+		}
+
+		internalPath = new File(internalPath, login);
 
 		downloadedFilesList.setAdapter(adapter);
 
-		File[] files = path.listFiles();
+		File[] files = internalPath.listFiles();
 
 		if (files != null)
 		{
 			for (File i : files)
 			{
-				data.add(new SystemFileData(i));
+				data.add(new SystemFileData(getApplicationContext(), i, NetworkFunctions.StorageType.INTERNAL));
 			}
 
 			adapter.notifyDataSetChanged();
+		}
+
+		if (SDCardPath != null)
+		{
+			files = SDCardPath.listFiles();
+
+			if (files != null)
+			{
+				for (File i : files)
+				{
+					data.add(new SystemFileData(getApplicationContext(), i, NetworkFunctions.StorageType.SDCard));
+				}
+
+				adapter.notifyDataSetChanged();
+			}
 		}
 
 		toolbar.setNavigationOnClickListener(new View.OnClickListener()
