@@ -96,7 +96,7 @@ public class UserSettingsSingleton
 						null,
 						null,
 						null,
-						UserSettings.Constants.AUTHORIZATION_DATE
+						UserSettings.Constants.AUTHORIZATION_DATE + " DESC"
 				);
 
 		if (!cursor.moveToFirst())

@@ -314,6 +314,8 @@ public class CloudStorageActivity extends AppCompatActivity
 				login = "";
 				password = "";
 
+				toAuthorizationActivity.putExtra("Event", "Exit from account");
+
 				toAuthorizationActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 				startActivity(toAuthorizationActivity);

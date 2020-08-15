@@ -26,6 +26,18 @@ public class AuthorizationActivity extends AppCompatActivity
 
 		UserSettingsSingleton instance = UserSettingsSingleton.getInstance(getApplicationContext());
 
+		Intent intent = getIntent();
+
+		if (intent != null)
+		{
+			String exitFromAccount = intent.getStringExtra("Event");
+
+			if (exitFromAccount != null && exitFromAccount.equals("Exit from account"))
+			{
+				return;
+			}
+		}
+
 		User user = instance.getLastAutoLoginUser();
 
 		if (user != null)

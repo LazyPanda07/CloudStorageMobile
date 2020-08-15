@@ -16,7 +16,7 @@ import static com.lazypanda07.cloudstoragemobile.DataBases.UserSettings.Constant
 class UserSettings extends SQLiteOpenHelper
 {
 	public static final String DATABASE_NAME = "UserSettings.sqlite3";
-	public static final int DATABASE_VERSION = 1;
+	public static final int DATABASE_VERSION = 2;
 
 	public UserSettings(Context context)
 	{
@@ -53,6 +53,6 @@ class UserSettings extends SQLiteOpenHelper
 		public static final String PASSWORD = "password";
 		public static final String AUTO_LOGIN = "auto_login";
 		public static final String STORAGE_TYPE = "storage_type";
-		public static final String AUTHORIZATION_DATE = "added_date";
+		public static final String AUTHORIZATION_DATE = "authorization_date";
 	}
 }
