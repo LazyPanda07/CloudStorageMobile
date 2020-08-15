@@ -3,10 +3,8 @@ package com.lazypanda07.cloudstoragemobile.Activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +31,7 @@ import com.lazypanda07.cloudstoragemobile.CustomListView.FileData;
 import com.lazypanda07.cloudstoragemobile.CustomListView.LandscapeCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
+import com.lazypanda07.cloudstoragemobile.GetDataFromUri.FileDataFromUri;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 import com.lazypanda07.networklib.Constants;
@@ -403,10 +402,10 @@ public class CloudStorageActivity extends AppCompatActivity
 			try
 			{
 				Uri uri = data.getData();
-				int fileSize = getFileSize(uri);
+				int fileSize = FileDataFromUri.getFileSize(ref, uri);
 				DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uri));
 
-				NetworkFunctions.uploadFile(ref, stream, fileSize, getFileName(uri), login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper));
+				NetworkFunctions.uploadFile(ref, stream, fileSize, FileDataFromUri.getFileName(ref, uri), login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper));
 			}
 			catch (IOException e)
 			{
@@ -433,44 +432,5 @@ public class CloudStorageActivity extends AppCompatActivity
 	public void previousFolder(View view)
 	{
 		NetworkFunctions.prevFolder(ref, login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper));
-	}
-
-	private int getFileSize(Uri fileUri)
-	{
-		Cursor cursor = getContentResolver().query(fileUri, null, null, null, null);
-
-		cursor.moveToFirst();
-
-		int result = cursor.getInt(cursor.getColumnIndex(OpenableColumns.SIZE));
-
-		cursor.close();
-
-		return result;
-	}
-
-	private String getFileName(Uri uri)
-	{
-		String result = null;
-		if (uri.getScheme().equals("content"))
-		{
-			Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-
-			cursor.moveToFirst();
-
-			result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-
-			cursor.close();
-		}
-		if (result == null)
-		{
-			result = uri.getPath();
-			int cut = result.lastIndexOf('/');
-			if (cut != -1)
-			{
-				result = result.substring(cut + 1);
-			}
-		}
-
-		return result;
 	}
 }

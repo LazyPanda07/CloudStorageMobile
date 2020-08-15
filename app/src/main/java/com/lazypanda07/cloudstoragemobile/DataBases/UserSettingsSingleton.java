@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 
+import java.util.ArrayList;
+
 public class UserSettingsSingleton
 {
 	private static UserSettingsSingleton instance = null;
@@ -215,5 +217,35 @@ public class UserSettingsSingleton
 		cursor.close();
 
 		return result;
+	}
+
+	public ArrayList<User> getAllUsers()
+	{
+		ArrayList<User> users = new ArrayList<>();
+		SQLiteDatabase db = userSettings.getReadableDatabase();
+
+		Cursor cursor = db.query
+				(
+						UserSettings.Constants.TABLE_NAME,
+						new String[]{UserSettings.Constants.LOGIN, UserSettings.Constants.PASSWORD},
+						null,
+						null,
+						null,
+						null,
+						null
+				);
+
+		while (cursor.moveToNext())
+		{
+			users.add(new User
+					(
+							cursor.getString(cursor.getColumnIndex(UserSettings.Constants.LOGIN)),
+							cursor.getString(cursor.getColumnIndex(UserSettings.Constants.PASSWORD))
+					));
+		}
+
+		cursor.close();
+
+		return users;
 	}
 }

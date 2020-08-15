@@ -80,4 +80,9 @@
     <string name="internal">Внутреннее хранилище</string>
     <string name="sd_card">SD карта</string>
 
+    <!-- String constants for popup windows -->
+    <string name="choose_available_account">Выберите доступный аккаунт</string>
+    <string name="authorization_in_another_account">Авторизоваться через другой аккаунт</string>
+    <string name="popup_window_cancel">Отменить</string>
+
 </resources>

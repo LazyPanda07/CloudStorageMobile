@@ -18,7 +18,7 @@ public class WaitResponseSnackbar
 		Context context = parent.getContext();
 		snackbar = Snackbar.make(parent, context.getResources().getString(R.string.wait_server_response), Snackbar.LENGTH_INDEFINITE);
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.wait_response_snackbar, null);
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.snackbar_wait_response, null);
 		Snackbar.SnackbarLayout content = (Snackbar.SnackbarLayout) snackbar.getView();
 
 		content.addView(layout);

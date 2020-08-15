@@ -40,7 +40,7 @@
             android:orientation="vertical">
 
             <include
-                layout="@layout/columns_files_list"
+                layout="@layout/linear_layout_columns_files_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

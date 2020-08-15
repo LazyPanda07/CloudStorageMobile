@@ -48,7 +48,7 @@ public class PortraitDownloadedFilesListViewAdapter extends BaseAdapter
 
 		if (result == null)
 		{
-			result = inflater.inflate(R.layout.downloaded_files_list, null);
+			result = inflater.inflate(R.layout.listview_downloaded_files_list, null);
 		}
 
 		((TextView) result.findViewById(R.id.name)).setText(data.get(i).getFileName());

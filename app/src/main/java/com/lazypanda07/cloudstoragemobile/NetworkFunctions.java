@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 public class NetworkFunctions
 {
-	//TODO: create settings menu and database for settings
 	public enum StorageType
 	{
 		INTERNAL,
@@ -132,7 +131,7 @@ public class NetworkFunctions
 		}
 	}
 
-	public static void authorization(final AppCompatActivity activity, View parent)
+	public static void authorization(final AppCompatActivity activity, View parent, final Class<?> nextActivity)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
 
@@ -189,7 +188,7 @@ public class NetworkFunctions
 						waitResponseSnackbar.dismiss();
 						network.close();
 
-						Intent intent = new Intent(activity.getApplicationContext(), CloudStorageActivity.class);
+						Intent intent = new Intent(activity.getApplicationContext(), nextActivity);
 
 						intent.putExtra("login", login);
 						intent.putExtra("password", password);
@@ -710,7 +709,10 @@ public class NetworkFunctions
 
 								network.close();
 
-								getFiles(activity, fileData, adapter, login, password, currentPath, parent);
+								if (fileData != null && adapter != null)
+								{
+									getFiles(activity, fileData, adapter, login, password, currentPath, parent);
+								}
 							}
 						}
 						else

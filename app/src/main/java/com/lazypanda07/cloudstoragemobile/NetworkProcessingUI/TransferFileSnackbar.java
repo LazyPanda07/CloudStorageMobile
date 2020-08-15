@@ -19,7 +19,7 @@ public class TransferFileSnackbar
 	{
 		snackbar = Snackbar.make(parent, message, Snackbar.LENGTH_INDEFINITE);
 		LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.transfer_file_snackbar, null);
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.snackbar_transfer_file, null);
 		Snackbar.SnackbarLayout content = (Snackbar.SnackbarLayout) snackbar.getView();
 
 		content.addView(layout);

@@ -13,10 +13,10 @@ import com.lazypanda07.cloudstoragemobile.HideKeyboard;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 
-//TODO: add database with automated authorization
 public class AuthorizationActivity extends AppCompatActivity
 {
 	private final AppCompatActivity ref = this;
+	private String eventType;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -25,14 +25,18 @@ public class AuthorizationActivity extends AppCompatActivity
 		setContentView(R.layout.activity_authorization);
 
 		UserSettingsSingleton instance = UserSettingsSingleton.getInstance(getApplicationContext());
-
 		Intent intent = getIntent();
 
 		if (intent != null)
 		{
-			String exitFromAccount = intent.getStringExtra("Event");
+			eventType = intent.getStringExtra("Event");
 
-			if (exitFromAccount != null && exitFromAccount.equals("Exit from account"))
+			//TODO: class for events
+			if (eventType != null && eventType.equals("Exit from account"))
+			{
+				return;
+			}
+			else if (eventType != null && eventType.equals("Authorization for upload files"))
 			{
 				return;
 			}
@@ -45,7 +49,7 @@ public class AuthorizationActivity extends AppCompatActivity
 			((TextView) findViewById(R.id.authorization_login)).setText(user.login);
 			((TextView) findViewById(R.id.authorization_password)).setText(user.password);
 
-			NetworkFunctions.authorization(ref, findViewById(R.id.authorization));
+			NetworkFunctions.authorization(ref, findViewById(R.id.authorization), CloudStorageActivity.class);
 		}
 	}
 
@@ -53,7 +57,14 @@ public class AuthorizationActivity extends AppCompatActivity
 	{
 		HideKeyboard.hideKeyboard(ref);
 
-		NetworkFunctions.authorization(ref, findViewById(R.id.authorization));
+		if (eventType.equals("Authorization for upload files"))
+		{
+			NetworkFunctions.authorization(ref, findViewById(R.id.authorization), UploadFilesActivity.class);
+		}
+		else
+		{
+			NetworkFunctions.authorization(ref, findViewById(R.id.authorization), CloudStorageActivity.class);
+		}
 	}
 
 	public void toRegistrationActivity(View view)

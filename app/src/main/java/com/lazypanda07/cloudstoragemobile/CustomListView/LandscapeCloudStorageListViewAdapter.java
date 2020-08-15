@@ -47,7 +47,7 @@ public class LandscapeCloudStorageListViewAdapter extends BaseAdapter
 
 		if (result == null)
 		{
-			result = inflater.inflate(R.layout.files_list, null);
+			result = inflater.inflate(R.layout.listview_files_list, null);
 		}
 
 		TextView name = result.findViewById(R.id.name);
