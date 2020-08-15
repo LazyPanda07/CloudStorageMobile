@@ -77,7 +77,10 @@ public class CloudStorageActivity extends AppCompatActivity
 		login = intent.getStringExtra("login");
 		password = intent.getStringExtra("password");
 
-		instance.addNewUser(login, password);
+		if (!instance.addNewUser(login, password))
+		{
+			instance.updateLastAuthorizationDate(login);
+		}
 
 		if (instance.getStorageType(login).equals(NetworkFunctions.StorageType.INTERNAL))
 		{

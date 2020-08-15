@@ -3,7 +3,6 @@ package com.lazypanda07.cloudstoragemobile.DataBases;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
@@ -63,7 +62,16 @@ public class UserSettingsSingleton
 		db.update(UserSettings.Constants.TABLE_NAME, values, condition, null);
 	}
 
-	public void addNewUser(String login, String password)
+	public void updateLastAuthorizationDate(String login)
+	{
+		SQLiteDatabase db = userSettings.getWritableDatabase();
+
+		db.execSQL("UPDATE " + UserSettings.Constants.TABLE_NAME +
+				" SET `" + UserSettings.Constants.AUTHORIZATION_DATE + "` = CURRENT_TIMESTAMP WHERE" +
+				" `" + UserSettings.Constants.LOGIN + "` = '" + login + '\'');
+	}
+
+	public boolean addNewUser(String login, String password)
 	{
 		ContentValues values = new ContentValues();
 		SQLiteDatabase db = userSettings.getWritableDatabase();
@@ -71,14 +79,7 @@ public class UserSettingsSingleton
 		values.put(UserSettings.Constants.LOGIN, login);
 		values.put(UserSettings.Constants.PASSWORD, password);
 
-		try
-		{
-			db.insertOrThrow(UserSettings.Constants.TABLE_NAME, null, values);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+		return db.insert(UserSettings.Constants.TABLE_NAME, null, values) != -1;
 	}
 
 	public User getLastAutoLoginUser()
@@ -180,6 +181,36 @@ public class UserSettingsSingleton
 		}
 
 		result = cursor.getInt(cursor.getColumnIndex(UserSettings.Constants.AUTO_LOGIN)) == 1;
+
+		cursor.close();
+
+		return result;
+	}
+
+	public String getLastAuthorizationDate(String login)
+	{
+		String result;
+		String condition = UserSettings.Constants.LOGIN + " = '" + login + "'";
+		SQLiteDatabase db = userSettings.getReadableDatabase();
+
+		Cursor cursor = db.query
+				(
+						UserSettings.Constants.TABLE_NAME,
+						new String[]{UserSettings.Constants.AUTHORIZATION_DATE},
+						condition,
+						null,
+						null,
+						null,
+						null
+				);
+
+		if (!cursor.moveToFirst())
+		{
+			cursor.close();
+			return "";
+		}
+
+		result = cursor.getString(cursor.getColumnIndex(UserSettings.Constants.AUTHORIZATION_DATE));
 
 		cursor.close();
 
