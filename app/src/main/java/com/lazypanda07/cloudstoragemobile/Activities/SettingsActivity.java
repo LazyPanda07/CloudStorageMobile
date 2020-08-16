@@ -71,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity
 		if (serverSettings.size() > 0)
 		{
 			ip.setText(serverSettings.get(serverSettings.size() - 1).ip);
-			port.setText(serverSettings.get(serverSettings.size() - 1).port);
+			port.setText(String.valueOf(serverSettings.get(serverSettings.size() - 1).port));
 		}
 
 		toolbar.setNavigationOnClickListener(new View.OnClickListener()
