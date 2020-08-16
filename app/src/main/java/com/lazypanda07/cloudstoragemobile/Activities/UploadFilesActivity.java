@@ -26,6 +26,8 @@ public class UploadFilesActivity extends AppCompatActivity
 	private AppCompatActivity ref = this;
 	private String login;
 	private String password;
+	private static String fileName = null;
+	private static int fileSize = -1;
 	private static Uri uri;
 
 	@Override
@@ -35,10 +37,19 @@ public class UploadFilesActivity extends AppCompatActivity
 		setContentView(R.layout.activity_upload_files);
 
 		Intent intent = getIntent();
+		Bundle bundle;
 
 		if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_SEND))
 		{
-			uri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+			bundle = intent.getExtras();
+
+			if (bundle != null)
+			{
+				uri = (Uri) bundle.get(Intent.EXTRA_STREAM);
+			}
+
+			fileSize = intent.getIntExtra("fileSize", -1);
+			fileName = intent.getStringExtra("fileName");
 
 			showAllAvailableAccounts();
 		}
@@ -113,8 +124,12 @@ public class UploadFilesActivity extends AppCompatActivity
 		{
 			if (uri != null)
 			{
-				int fileSize = FileDataFromUri.getFileSize(ref, uri);
-				String fileName = FileDataFromUri.getFileName(ref, uri);
+				if (fileSize == -1 && fileName == null)
+				{
+					fileSize = FileDataFromUri.getFileSize(ref, uri);
+					fileName = FileDataFromUri.getFileName(ref, uri);
+				}
+
 				DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uri));
 
 				NetworkFunctions.uploadFile(ref, stream, fileSize, fileName, login, password, null, null, new String[]{"Home"}, findViewById(R.id.upload_files));

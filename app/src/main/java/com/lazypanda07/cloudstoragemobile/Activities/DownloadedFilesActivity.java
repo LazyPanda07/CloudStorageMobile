@@ -1,6 +1,7 @@
 package com.lazypanda07.cloudstoragemobile.Activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MenuItem;
@@ -121,7 +122,6 @@ public class DownloadedFilesActivity extends AppCompatActivity
 				return true;
 			}
 		});
-		//TODO: onItemLongClickListener upload file, remove file
 	}
 
 	private void showPopupMenuOnItemLongClick(final View view, final int i)
@@ -151,9 +151,21 @@ public class DownloadedFilesActivity extends AppCompatActivity
 						return false;
 
 					case R.id.upload_file:
-						//TODO: upload file through special activity
+						Intent intent = new Intent(getBaseContext(), UploadFilesActivity.class);
+						Bundle bundle = new Bundle();
+						Uri uri = Uri.fromFile(data.get(i).file);
 
-						break;
+						bundle.putParcelable(Intent.EXTRA_STREAM, uri);
+
+						intent.setAction(Intent.ACTION_SEND);
+
+						intent.putExtras(bundle);
+						intent.putExtra("fileSize", (int) data.get(i).file.length());
+						intent.putExtra("fileName", data.get(i).file.getName());
+
+						startActivity(intent);
+
+						return true;
 				}
 
 				return false;

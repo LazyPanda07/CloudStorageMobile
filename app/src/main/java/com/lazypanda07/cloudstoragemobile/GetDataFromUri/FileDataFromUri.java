@@ -11,10 +11,11 @@ public class FileDataFromUri
 	public static int getFileSize(AppCompatActivity activity, Uri fileUri)
 	{
 		Cursor cursor = activity.getContentResolver().query(fileUri, null, null, null, null);
+		int result;
 
 		cursor.moveToFirst();
 
-		int result = cursor.getInt(cursor.getColumnIndex(OpenableColumns.SIZE));
+		result = cursor.getInt(cursor.getColumnIndex(OpenableColumns.SIZE));
 
 		cursor.close();
 
@@ -24,16 +25,14 @@ public class FileDataFromUri
 	public static String getFileName(AppCompatActivity activity, Uri fileUri)
 	{
 		String result = null;
-		if (fileUri.getScheme().equals("content"))
-		{
-			Cursor cursor = activity.getContentResolver().query(fileUri, null, null, null, null);
+		Cursor cursor = activity.getContentResolver().query(fileUri, null, null, null, null);
 
-			cursor.moveToFirst();
+		cursor.moveToFirst();
 
-			result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+		result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
 
-			cursor.close();
-		}
+		cursor.close();
+
 		if (result == null)
 		{
 			result = fileUri.getPath();

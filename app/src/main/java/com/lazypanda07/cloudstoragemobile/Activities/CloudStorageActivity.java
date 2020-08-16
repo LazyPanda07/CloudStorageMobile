@@ -40,10 +40,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//TODO: add activity for open file with CloudStorageMobile
 //TODO: add current user name on each activity
 //TODO: add multiple upload files
-//TODO: add choose account on choose file from system
 //TODO: add custom file path in Download folder must be like Download/$USER_NAME/$COPY_CURRENT_PATH/$FILE_NAME
 public class CloudStorageActivity extends AppCompatActivity
 {
@@ -403,9 +401,10 @@ public class CloudStorageActivity extends AppCompatActivity
 			{
 				Uri uri = data.getData();
 				int fileSize = FileDataFromUri.getFileSize(ref, uri);
+				String fileName = FileDataFromUri.getFileName(ref, uri);
 				DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uri));
 
-				NetworkFunctions.uploadFile(ref, stream, fileSize, FileDataFromUri.getFileName(ref, uri), login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper));
+				NetworkFunctions.uploadFile(ref, stream, fileSize, fileName, login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper));
 			}
 			catch (IOException e)
 			{
