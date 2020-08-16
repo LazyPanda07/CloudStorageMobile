@@ -40,7 +40,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//TODO: add current user name on each activity
 //TODO: add multiple upload files
 //TODO: add custom file path in Download folder must be like Download/$USER_NAME/$COPY_CURRENT_PATH/$FILE_NAME
 public class CloudStorageActivity extends AppCompatActivity
@@ -424,7 +423,7 @@ public class CloudStorageActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		getMenuInflater().inflate(R.menu.settings, menu);
+		getMenuInflater().inflate(R.menu.settings_cloud_storage, menu);
 		return true;
 	}
 

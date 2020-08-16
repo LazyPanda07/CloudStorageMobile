@@ -1,15 +1,23 @@
 package com.lazypanda07.cloudstoragemobile.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.lazypanda07.cloudstoragemobile.DataBases.Connection;
+import com.lazypanda07.cloudstoragemobile.DataBases.ConnectionSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
+
+import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity
 {
@@ -24,10 +32,15 @@ public class SettingsActivity extends AppCompatActivity
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		final Switch chooseStorage = findViewById(R.id.choose_storage_switch);
 		final Switch autoLogin = findViewById(R.id.auto_login_switch);
+		final EditText ip = findViewById(R.id.settings_ip);
+		final EditText port = findViewById(R.id.settings_port);
 		final String login = getIntent().getStringExtra("login");
-		final UserSettingsSingleton instance = UserSettingsSingleton.getInstance();
+		final UserSettingsSingleton userInstance = UserSettingsSingleton.getInstance();
+		final ConnectionSettingsSingleton connectionInstance = ConnectionSettingsSingleton.getInstance();
+		ArrayList<Connection> serverSettings = connectionInstance.getAllServerSettings();
+		Intent intent = getIntent();
 
-		if (instance.getStorageType(login).equals(NetworkFunctions.StorageType.INTERNAL))
+		if (userInstance.getStorageType(login).equals(NetworkFunctions.StorageType.INTERNAL))
 		{
 			chooseStorage.setChecked(true);
 		}
@@ -35,13 +48,57 @@ public class SettingsActivity extends AppCompatActivity
 		{
 			chooseStorage.setChecked(false);
 		}
-		autoLogin.setChecked(instance.getAutoLogin(login));
+		autoLogin.setChecked(userInstance.getAutoLogin(login));
+
+		if (intent != null)
+		{
+			String eventType = intent.getStringExtra("Event");
+
+			if (eventType != null)
+			{
+				TextView textView = findViewById(R.id.server_settings);
+				LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) textView.getLayoutParams();
+
+				params.topMargin = 0;
+
+				chooseStorage.setVisibility(View.GONE);
+				autoLogin.setVisibility(View.GONE);
+				findViewById(R.id.account_settings).setVisibility(View.GONE);
+				textView.setLayoutParams(params);
+			}
+		}
+
+		if (serverSettings.size() > 0)
+		{
+			ip.setText(serverSettings.get(serverSettings.size() - 1).ip);
+			port.setText(serverSettings.get(serverSettings.size() - 1).port);
+		}
 
 		toolbar.setNavigationOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View view)
 			{
+				String serverIp;
+				int serverPort;
+
+				try
+				{
+					serverIp = ip.getText().toString();
+					serverPort = Integer.parseInt(port.getText().toString());
+
+					if (!serverIp.equals(""))
+					{
+						connectionInstance.addNewServerSettings(serverIp, serverPort);
+
+						connectionInstance.setLastUsed(serverIp, serverPort);
+					}
+				}
+				catch (NumberFormatException ignored)
+				{
+
+				}
+
 				finish();
 			}
 		});
@@ -62,7 +119,7 @@ public class SettingsActivity extends AppCompatActivity
 					NetworkFunctions.storageType = NetworkFunctions.StorageType.SDCard;
 				}
 
-				instance.updateStorageType(login, NetworkFunctions.storageType);
+				userInstance.updateStorageType(login, NetworkFunctions.storageType);
 			}
 		});
 
@@ -71,7 +128,7 @@ public class SettingsActivity extends AppCompatActivity
 			@Override
 			public void onClick(View view)
 			{
-				instance.updateAutoLogin(login, autoLogin.isChecked());
+				userInstance.updateAutoLogin(login, autoLogin.isChecked());
 			}
 		});
 	}

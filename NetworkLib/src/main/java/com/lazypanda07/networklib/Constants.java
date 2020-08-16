@@ -4,8 +4,8 @@ public class Constants
 {
 	public static final int GET_FILE = 1;
 
-	public static final String APIServerIp = "31.207.166.231";
-	public static final int APIServerPort = 8500;
+	public static String APIServerIp;
+	public static int APIServerPort;
 
 	public static final short HTTP_PACKET_SIZE = 4096;
 	public static final int FILE_PACKET_SIZE = 10 * 1024 * 1024;    //10 MB
@@ -15,8 +15,6 @@ public class Constants
 	public static final String DATA_DELIMITER = "/";
 	public static final String DATA_PART_DELIMITER = "|";
 	public static final char WINDOWS_SEPARATOR = '\\';
-
-	public static final int MAX_FILES_FROM_EXPLORER = 10;
 
 	public static class RequestType
 	{

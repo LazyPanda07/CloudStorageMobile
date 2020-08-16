@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        app:menu="@menu/settings"
+        app:menu="@menu/settings_cloud_storage"
         app:navigationIcon="@drawable/ic_menu">
 
         <ImageButton

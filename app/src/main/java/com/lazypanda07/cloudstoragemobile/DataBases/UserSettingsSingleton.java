@@ -3,6 +3,7 @@ package com.lazypanda07.cloudstoragemobile.DataBases;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
@@ -37,7 +38,8 @@ public class UserSettingsSingleton
 
 	public void updateAutoLogin(String login, boolean autoLogin)
 	{
-		String condition = UserSettings.Constants.LOGIN + " = '" + login + "'";
+		String condition = String.format("%s = '%s'", UserSettings.Constants.LOGIN, login);
+
 		SQLiteDatabase db = userSettings.getWritableDatabase();
 		ContentValues values = new ContentValues();
 
@@ -48,7 +50,7 @@ public class UserSettingsSingleton
 
 	public void updateStorageType(String login, NetworkFunctions.StorageType type)
 	{
-		String condition = UserSettings.Constants.LOGIN + " = '" + login + "'";
+		String condition = String.format("%s = '%s'", UserSettings.Constants.LOGIN, login);
 		SQLiteDatabase db = userSettings.getWritableDatabase();
 		ContentValues values = new ContentValues();
 
@@ -81,7 +83,16 @@ public class UserSettingsSingleton
 		values.put(UserSettings.Constants.LOGIN, login);
 		values.put(UserSettings.Constants.PASSWORD, password);
 
-		return db.insert(UserSettings.Constants.TABLE_NAME, null, values) != -1;
+		try
+		{
+			db.insertOrThrow(UserSettings.Constants.TABLE_NAME, null, values);
+
+			return true;
+		}
+		catch (SQLException e)
+		{
+			return false;
+		}
 	}
 
 	public User getLastAutoLoginUser()
@@ -121,7 +132,7 @@ public class UserSettingsSingleton
 	public NetworkFunctions.StorageType getStorageType(String login)
 	{
 		String type;
-		String condition = UserSettings.Constants.LOGIN + " = '" + login + "'";
+		String condition = String.format("%s = '%s'", UserSettings.Constants.LOGIN, login);
 		SQLiteDatabase db = userSettings.getReadableDatabase();
 
 		Cursor cursor = db.query
@@ -162,7 +173,7 @@ public class UserSettingsSingleton
 	public boolean getAutoLogin(String login)
 	{
 		boolean result;
-		String condition = UserSettings.Constants.LOGIN + " = '" + login + "'";
+		String condition = String.format("%s = '%s'", UserSettings.Constants.LOGIN, login);
 		SQLiteDatabase db = userSettings.getReadableDatabase();
 
 		Cursor cursor = db.query
@@ -192,7 +203,7 @@ public class UserSettingsSingleton
 	public String getLastAuthorizationDate(String login)
 	{
 		String result;
-		String condition = UserSettings.Constants.LOGIN + " = '" + login + "'";
+		String condition = String.format("%s = '%s'", UserSettings.Constants.LOGIN, login);
 		SQLiteDatabase db = userSettings.getReadableDatabase();
 
 		Cursor cursor = db.query
