@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.lazypanda07.cloudstoragemobile.DataBases.User;
 import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.GetDataFromUri.FileDataFromUri;
+import com.lazypanda07.cloudstoragemobile.IntentEvents;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 
@@ -100,7 +101,7 @@ public class UploadFilesActivity extends AppCompatActivity
 			{
 				Intent toAuthorizationActivity = new Intent(getBaseContext(), AuthorizationActivity.class);
 
-				toAuthorizationActivity.putExtra("Event", "Authorization for upload files");
+				toAuthorizationActivity.putExtra(IntentEvents.string(), IntentEvents.AUTHORIZATION_FOR_UPLOAD_FILES);
 
 				toAuthorizationActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

@@ -32,6 +32,7 @@ import com.lazypanda07.cloudstoragemobile.CustomListView.LandscapeCloudStorageLi
 import com.lazypanda07.cloudstoragemobile.CustomListView.PortraitCloudStorageListViewAdapter;
 import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.GetDataFromUri.FileDataFromUri;
+import com.lazypanda07.cloudstoragemobile.IntentEvents;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 import com.lazypanda07.networklib.Constants;
@@ -310,7 +311,7 @@ public class CloudStorageActivity extends AppCompatActivity
 				login = "";
 				password = "";
 
-				toAuthorizationActivity.putExtra("Event", "Exit from account");
+				toAuthorizationActivity.putExtra(IntentEvents.string(), IntentEvents.EXIT_FROM_ACCOUNT);
 
 				toAuthorizationActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

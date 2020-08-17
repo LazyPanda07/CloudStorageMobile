@@ -15,6 +15,7 @@ import com.lazypanda07.cloudstoragemobile.DataBases.ConnectionSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.DataBases.User;
 import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.HideKeyboard;
+import com.lazypanda07.cloudstoragemobile.IntentEvents;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 import com.lazypanda07.networklib.Constants;
@@ -46,7 +47,7 @@ public class AuthorizationActivity extends AppCompatActivity
 				{
 					Intent toSettingsActivity = new Intent(getBaseContext(), SettingsActivity.class);
 
-					toSettingsActivity.putExtra("Event", "Authorization settings");
+					toSettingsActivity.putExtra(IntentEvents.string(), IntentEvents.AUTHORIZATION_SETTINGS);
 
 					startActivity(toSettingsActivity);
 
@@ -65,14 +66,13 @@ public class AuthorizationActivity extends AppCompatActivity
 
 		if (intent != null)
 		{
-			eventType = intent.getStringExtra("Event");
+			eventType = intent.getStringExtra(IntentEvents.string());
 
-			//TODO: class for events
-			if (eventType != null && eventType.equals("Exit from account"))
+			if (eventType != null && eventType.equals(IntentEvents.EXIT_FROM_ACCOUNT))
 			{
 				return;
 			}
-			else if (eventType != null && eventType.equals("Authorization for upload files"))
+			else if (eventType != null && eventType.equals(IntentEvents.AUTHORIZATION_FOR_UPLOAD_FILES))
 			{
 				return;
 			}
@@ -100,7 +100,7 @@ public class AuthorizationActivity extends AppCompatActivity
 			return;
 		}
 
-		if (eventType.equals("Authorization for upload files"))
+		if (eventType.equals(IntentEvents.AUTHORIZATION_FOR_UPLOAD_FILES))
 		{
 			NetworkFunctions.authorization(ref, findViewById(R.id.authorization), UploadFilesActivity.class);
 		}

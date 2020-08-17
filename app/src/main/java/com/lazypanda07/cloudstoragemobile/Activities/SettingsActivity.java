@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.lazypanda07.cloudstoragemobile.DataBases.Connection;
 import com.lazypanda07.cloudstoragemobile.DataBases.ConnectionSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
+import com.lazypanda07.cloudstoragemobile.IntentEvents;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
 
@@ -52,7 +53,7 @@ public class SettingsActivity extends AppCompatActivity
 
 		if (intent != null)
 		{
-			String eventType = intent.getStringExtra("Event");
+			String eventType = intent.getStringExtra(IntentEvents.string());
 
 			if (eventType != null)
 			{

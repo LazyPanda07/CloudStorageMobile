@@ -7,7 +7,6 @@ import com.lazypanda07.cloudstoragemobile.R;
 
 import java.io.File;
 
-//TODO: create database with metadata for each file that been downloaded
 public class SystemFileData
 {
 	private Context context;
