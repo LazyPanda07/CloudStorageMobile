@@ -1,3 +1,3 @@
 include ':NetworkLib'
-include ':app'
+include ':CloudStorage'
 rootProject.name = "CloudStorageMobile"
