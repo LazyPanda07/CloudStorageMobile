@@ -93,6 +93,9 @@ public class AuthorizationActivity extends AppCompatActivity
 	{
 		HideKeyboard.hideKeyboard(ref);
 
+		ConnectionSettingsSingleton connectionInstance = ConnectionSettingsSingleton.getInstance();
+		connection = connectionInstance.getLastUsed();
+
 		if (connection == null)
 		{
 			Toast.makeText(getApplicationContext(), R.string.empty_server_settings, Toast.LENGTH_LONG).show();

@@ -17,7 +17,6 @@ import com.lazypanda07.networklib.Constants;
 public class RegistrationActivity extends AppCompatActivity
 {
 	private final AppCompatActivity ref = this;
-	private Connection connection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -25,19 +24,22 @@ public class RegistrationActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_registration);
 
+		ConnectionSettingsSingleton.getInstance(getApplicationContext());
+	}
+
+	public void registration(View view)
+	{
+		HideKeyboard.hideKeyboard(ref);
+
 		ConnectionSettingsSingleton connectionInstance = ConnectionSettingsSingleton.getInstance(getApplicationContext());
-		connection = connectionInstance.getLastUsed();
+
+		Connection connection = connectionInstance.getLastUsed();
 
 		if (connection != null)
 		{
 			Constants.APIServerIp = connection.ip;
 			Constants.APIServerPort = connection.port;
 		}
-	}
-
-	public void registration(View view)
-	{
-		HideKeyboard.hideKeyboard(ref);
 
 		if (connection == null)
 		{
