@@ -40,6 +40,8 @@ public class UploadFilesActivity extends AppCompatActivity
 		Intent intent = getIntent();
 		Bundle bundle;
 
+		showAllAvailableAccounts();
+
 		if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_SEND))
 		{
 			bundle = intent.getExtras();
@@ -51,8 +53,6 @@ public class UploadFilesActivity extends AppCompatActivity
 
 			fileSize = intent.getIntExtra("fileSize", -1);
 			fileName = intent.getStringExtra("fileName");
-
-			showAllAvailableAccounts();
 		}
 		else
 		{
