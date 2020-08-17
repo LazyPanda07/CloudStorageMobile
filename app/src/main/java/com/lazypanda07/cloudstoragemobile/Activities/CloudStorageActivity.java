@@ -23,6 +23,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -66,7 +67,7 @@ public class CloudStorageActivity extends AppCompatActivity
 		NavigationView navigationView = findViewById(R.id.navigation_view);
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		final ActionBar actionBar;
-		toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
+		toolbar.setTitleTextColor(ResourcesCompat.getColor(getResources(), R.color.colorWhite, null));
 		final ListView filesList = findViewById(R.id.files_list);
 		final Intent intent = getIntent();
 		UserSettingsSingleton instance = UserSettingsSingleton.getInstance();
