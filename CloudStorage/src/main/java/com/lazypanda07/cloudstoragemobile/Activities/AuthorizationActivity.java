@@ -100,7 +100,7 @@ public class AuthorizationActivity extends AppCompatActivity
 			return;
 		}
 
-		if (eventType.equals(IntentEvents.AUTHORIZATION_FOR_UPLOAD_FILES))
+		if (eventType != null && eventType.equals(IntentEvents.AUTHORIZATION_FOR_UPLOAD_FILES))
 		{
 			NetworkFunctions.authorization(ref, findViewById(R.id.authorization), UploadFilesActivity.class);
 		}
