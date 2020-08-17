@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('release-key.jks')
+            storePassword '7416707b'
+            keyAlias 'releaseKey'
+            keyPassword 'k7416707b'
+        }
+    }
     compileSdkVersion 30
 
     defaultConfig {
@@ -17,6 +25,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
