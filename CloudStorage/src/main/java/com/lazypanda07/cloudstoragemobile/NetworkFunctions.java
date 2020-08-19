@@ -65,7 +65,7 @@ public class NetworkFunctions
 	{
 		try
 		{
-			String request = "";
+			String request;
 
 			if (controlRequest.equals(Constants.ControlRequests.PREVIOUS_FOLDER))
 			{
@@ -95,7 +95,7 @@ public class NetworkFunctions
 
 			try
 			{
-				network.sendBytes(request.getBytes("CP1251"));
+				network.sendBytes(request.getBytes(StandardCharsets.ISO_8859_1));
 			}
 			catch (IOException e)
 			{
@@ -850,6 +850,8 @@ public class NetworkFunctions
 							}
 
 							network.sendBytes(request.getBytes("CP1251"));
+
+							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
 
 							network.close();
 
