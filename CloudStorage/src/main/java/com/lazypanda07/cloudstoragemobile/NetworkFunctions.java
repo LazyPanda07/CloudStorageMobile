@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.lazypanda07.cloudstoragemobile.Activities.CloudStorageActivity;
@@ -128,6 +129,35 @@ public class NetworkFunctions
 		{
 			e.printStackTrace();
 			return false;
+		}
+	}
+
+	private static HTTP.HTTPParser removeFile(Network network, String fileName, @Nullable WaitResponseSnackbar waitResponseSnackbar)
+	{
+		try
+		{
+			String request = (new HTTP.HTTPBuilder()).setMethod("POST").
+					setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.REMOVE_FILE).
+					setHeaders("File-Name", fileName)
+					.build();
+
+			request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
+
+			if (waitResponseSnackbar != null && !waitResponseSnackbar.isShown())
+			{
+				network.close();
+				return null;
+			}
+
+			network.sendBytes(request.getBytes());
+
+			return new HTTP.HTTPParser(network.receiveBytes());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+
+			return null;
 		}
 	}
 
@@ -587,7 +617,7 @@ public class NetworkFunctions
 		}).start();
 	}
 
-	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final BaseAdapter adapter, final String[] currentPath, final View parent)
+	public static void uploadFile(final AppCompatActivity activity, final DataInputStream stream, final int fileSize, final String fileName, final String login, final String password, final ArrayList<FileData> fileData, final BaseAdapter adapter, final String[] currentPath, final View parent, final boolean removeBeforeUpload)
 	{
 		final WaitResponseSnackbar waitResponseSnackbar = new WaitResponseSnackbar(parent);
 		final TransferFileSnackbar transferFileSnackbar = new TransferFileSnackbar(parent, String.format(parent.getContext().getResources().getString(R.string.snackbar_text_upload_file), fileName));
@@ -601,6 +631,7 @@ public class NetworkFunctions
 			{
 				int offset = 0;
 				boolean isLast;
+				boolean isFileSingle = true;
 
 				try
 				{
@@ -612,7 +643,25 @@ public class NetworkFunctions
 					{
 						if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 						{
+							if (removeBeforeUpload)
+							{
+								isFileSingle = removeFile(network, fileName, waitResponseSnackbar) != null;
+							}
+
 							waitResponseSnackbar.dismiss();
+
+							if (!isFileSingle)
+							{
+								activity.runOnUiThread(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										Toast.makeText(activity.getApplicationContext(), R.string.cant_replace_file, Toast.LENGTH_LONG).show();
+									}
+								});
+								return;
+							}
 
 							transferFileSnackbar.show();
 
@@ -755,26 +804,11 @@ public class NetworkFunctions
 					{
 						if (setPath(network, currentPath) && waitResponseSnackbar.isShown())
 						{
-							String request = (new HTTP.HTTPBuilder()).setMethod("POST").
-									setHeaders(Constants.RequestType.FILES_TYPE, Constants.FilesRequests.REMOVE_FILE).
-									setHeaders("File-Name", fileName)
-									.build();
-
-							request = HTTP.HTTPBuilder.insertSizeHeaderToHTTPMessage(request);
-
-							if (!waitResponseSnackbar.isShown())
-							{
-								network.close();
-								return;
-							}
-
-							network.sendBytes(request.getBytes());
-
-							HTTP.HTTPParser parser = new HTTP.HTTPParser(network.receiveBytes());
+							HTTP.HTTPParser parser = removeFile(network, fileName, waitResponseSnackbar);
 
 							waitResponseSnackbar.dismiss();
 
-							if (parser.getHeaders().get("Error").equals("0"))
+							if (parser != null && parser.getHeaders().get("Error").equals("0"))
 							{
 								network.close();
 
@@ -789,7 +823,7 @@ public class NetworkFunctions
 									}
 								});
 							}
-							else
+							else if (parser != null)
 							{
 								ErrorHandling.showError(activity, "Не удалось удалить " + fileName);
 								network.close();

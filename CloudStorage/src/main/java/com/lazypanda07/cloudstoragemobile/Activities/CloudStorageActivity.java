@@ -39,6 +39,7 @@ import com.lazypanda07.cloudstoragemobile.R;
 import com.lazypanda07.networklib.Constants;
 
 import java.io.DataInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -53,6 +54,7 @@ public class CloudStorageActivity extends AppCompatActivity
 	private BaseAdapter adapter;
 	private String login;
 	private String password;
+	private Uri uploadFileUri;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -252,7 +254,7 @@ public class CloudStorageActivity extends AppCompatActivity
 						intent.setType("*/*");
 						intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-						startActivityForResult(Intent.createChooser(intent, getApplicationContext().getResources().getString(R.string.choose_file)), Constants.GET_FILE);
+						startActivityForResult(Intent.createChooser(intent, getApplicationContext().getResources().getString(R.string.cloud_storage_choose_file)), Constants.GET_FILE);
 
 						break;
 				}
@@ -275,7 +277,7 @@ public class CloudStorageActivity extends AppCompatActivity
 				intent.setType("*/*");
 				intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-				startActivityForResult(Intent.createChooser(intent, getApplicationContext().getResources().getString(R.string.choose_file)), Constants.GET_FILE);
+				startActivityForResult(Intent.createChooser(intent, getApplicationContext().getResources().getString(R.string.cloud_storage_choose_file)), Constants.GET_FILE);
 
 				drawerLayout.closeDrawer(GravityCompat.START);
 
@@ -330,7 +332,7 @@ public class CloudStorageActivity extends AppCompatActivity
 		final EditText folderNameEdit = new EditText(builder.getContext());
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
-		builder.setPositiveButton(R.string.save_folder_name, new DialogInterface.OnClickListener()
+		builder.setPositiveButton(R.string.cloud_storage_save_folder_name, new DialogInterface.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialogInterface, int i)
@@ -346,7 +348,7 @@ public class CloudStorageActivity extends AppCompatActivity
 			}
 		});
 
-		builder.setNegativeButton(R.string.cancel_folder_name, new DialogInterface.OnClickListener()
+		builder.setNegativeButton(R.string.cloud_storage_cancel_folder_name, new DialogInterface.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialogInterface, int i)
@@ -355,8 +357,8 @@ public class CloudStorageActivity extends AppCompatActivity
 			}
 		});
 
-		builder.setTitle(R.string.choose_folder_name_title);
-		builder.setMessage(R.string.choose_folder_name);
+		builder.setTitle(R.string.cloud_storage_choose_folder_name_title);
+		builder.setMessage(R.string.cloud_storage_choose_folder_name);
 		builder.setCancelable(true);
 
 		folderNameEdit.setLayoutParams(params);
@@ -396,16 +398,35 @@ public class CloudStorageActivity extends AppCompatActivity
 	{
 		super.onActivityResult(requestCode, resultCode, data);
 
+		//TODO: alert dialog CloudStorage.this
 		if (resultCode == RESULT_OK)
 		{
 			try
 			{
-				Uri uri = data.getData();
-				int fileSize = FileDataFromUri.getFileSize(ref, uri);
-				String fileName = FileDataFromUri.getFileName(ref, uri);
-				DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uri));
+				uploadFileUri = data.getData();
+				int fileSize = FileDataFromUri.getFileSize(ref, uploadFileUri);
+				String fileName = FileDataFromUri.getFileName(ref, uploadFileUri);
+				DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uploadFileUri));
+				boolean sameFileName = false;
 
-				NetworkFunctions.uploadFile(ref, stream, fileSize, fileName, login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper));
+				for (int i = 0; i < fileData.size(); i++)
+				{
+					if (fileName.equals(fileData.get(i).fileName))
+					{
+						sameFileName = true;
+
+						break;
+					}
+				}
+
+				if (sameFileName)
+				{
+					replaceFileDialog(fileName);
+				}
+				else
+				{
+					NetworkFunctions.uploadFile(ref, stream, fileSize, fileName, login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper), false);
+				}
 			}
 			catch (IOException e)
 			{
@@ -420,6 +441,46 @@ public class CloudStorageActivity extends AppCompatActivity
 		{
 			Toast.makeText(getApplicationContext(), "Ошибка", Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	private void replaceFileDialog(String fileName)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(CloudStorageActivity.this);
+
+		builder.setPositiveButton(R.string.cloud_storage_replace_file_yes, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i)
+			{
+				try
+				{
+					int fileSize = FileDataFromUri.getFileSize(ref, uploadFileUri);
+					String fileName = FileDataFromUri.getFileName(ref, uploadFileUri);
+					DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uploadFileUri));
+
+					NetworkFunctions.uploadFile(ref, stream, fileSize, fileName, login, password, fileData, adapter, currentPath, findViewById(R.id.cloud_storage_wrapper), true);
+				}
+				catch (FileNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+
+		builder.setNegativeButton(R.string.cloud_storage_replace_file_no, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i)
+			{
+				dialogInterface.dismiss();
+			}
+		});
+
+		builder.setTitle(R.string.cloud_storage_replace_file_title);
+
+		builder.setMessage(String.format(getResources().getString(R.string.cloud_storage_replace_file_message), fileName));
+
+		builder.create().show();
 	}
 
 	@Override

@@ -29,11 +29,15 @@
     <string name="cloud_storage_type_title">Тип</string>
     <string name="cloud_storage_date_of_change_title">Дата изменения</string>
     <string name="cloud_storage_size_title">Размер</string>
-    <string name="choose_folder_name_title">Создание новой папки</string>
-    <string name="choose_file">Выберите файл для загрузки</string>
-    <string name="choose_folder_name">Выберите название для новой папки</string>
-    <string name="save_folder_name">Сохранить</string>
-    <string name="cancel_folder_name">Отменить</string>
+    <string name="cloud_storage_choose_folder_name_title">Создание новой папки</string>
+    <string name="cloud_storage_choose_file">Выберите файл для загрузки</string>
+    <string name="cloud_storage_choose_folder_name">Выберите название для новой папки</string>
+    <string name="cloud_storage_save_folder_name">Сохранить</string>
+    <string name="cloud_storage_cancel_folder_name">Отменить</string>
+    <string name="cloud_storage_replace_file_title">Замена файла</string>
+    <string name="cloud_storage_replace_file_yes">Да</string>
+    <string name="cloud_storage_replace_file_no">Нет</string>
+    <string name="cloud_storage_replace_file_message">Заменить файл %s?</string>
 
     <!-- String constants for menus in CloudStorageActivity -->
     <string name="cloud_storage_download_file_title">Скачать файл</string>
@@ -77,6 +81,7 @@
     <string name="connection_error">Не удалось подключиться к серверу</string>
     <string name="sd_card_is_not_supported">SD карта не поддерживается</string>
     <string name="empty_server_settings">Установите настройки подключения</string>
+    <string name="cant_replace_file">Не удалось заменить файл</string>
 
     <!-- String constants for snackbars -->
     <string name="wait_server_response">Ожидание ответа от сервера</string>

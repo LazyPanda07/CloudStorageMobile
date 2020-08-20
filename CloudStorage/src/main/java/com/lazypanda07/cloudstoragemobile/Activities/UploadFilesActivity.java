@@ -133,7 +133,8 @@ public class UploadFilesActivity extends AppCompatActivity
 
 				DataInputStream stream = new DataInputStream(getContentResolver().openInputStream(uri));
 
-				NetworkFunctions.uploadFile(ref, stream, fileSize, fileName, login, password, null, null, new String[]{"Home"}, findViewById(R.id.upload_files));
+				//TODO: alert dialog for replace
+				NetworkFunctions.uploadFile(ref, stream, fileSize, fileName, login, password, null, null, new String[]{"Home"}, findViewById(R.id.upload_files), false);
 			}
 		}
 		catch (FileNotFoundException e)
