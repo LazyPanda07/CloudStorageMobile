@@ -194,6 +194,14 @@ public class NetworkFunctions
 						return;
 					}
 
+					if (!Validation.validationUserData(login) || !Validation.validationUserData(password))
+					{
+						waitResponseSnackbar.dismiss();
+						ErrorHandling.showError(activity, R.string.not_allowable_characters);
+						network.close();
+						return;
+					}
+
 					String body = "login=" + login + "&password=" + password;
 
 					String request = (new HTTP.HTTPBuilder()).setMethod("POST").
@@ -281,6 +289,14 @@ public class NetworkFunctions
 					{
 						waitResponseSnackbar.dismiss();
 						ErrorHandling.showError(activity, R.string.password_mismatch);
+						network.close();
+						return;
+					}
+
+					if (!Validation.validationUserData(login) || !Validation.validationUserData(password))
+					{
+						waitResponseSnackbar.dismiss();
+						ErrorHandling.showError(activity, R.string.not_allowable_characters);
 						network.close();
 						return;
 					}

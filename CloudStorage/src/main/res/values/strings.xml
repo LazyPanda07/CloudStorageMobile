@@ -82,6 +82,7 @@
     <string name="sd_card_is_not_supported">SD карта не поддерживается</string>
     <string name="empty_server_settings">Установите настройки подключения</string>
     <string name="cant_replace_file">Не удалось заменить файл</string>
+    <string name="not_allowable_characters">Разрешено использовать только следующие символы : a–z, A–Z, 0–9</string>
 
     <!-- String constants for snackbars -->
     <string name="wait_server_response">Ожидание ответа от сервера</string>
