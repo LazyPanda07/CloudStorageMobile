@@ -17,6 +17,7 @@ import com.lazypanda07.cloudstoragemobile.DataBases.UserSettingsSingleton;
 import com.lazypanda07.cloudstoragemobile.IntentEvents;
 import com.lazypanda07.cloudstoragemobile.NetworkFunctions;
 import com.lazypanda07.cloudstoragemobile.R;
+import com.lazypanda07.networklib.Constants;
 
 import java.util.ArrayList;
 
@@ -41,14 +42,7 @@ public class SettingsActivity extends AppCompatActivity
 		ArrayList<Connection> serverSettings = connectionInstance.getAllServerSettings();
 		Intent intent = getIntent();
 
-		if (userInstance.getStorageType(login).equals(NetworkFunctions.StorageType.INTERNAL))
-		{
-			chooseStorage.setChecked(true);
-		}
-		else
-		{
-			chooseStorage.setChecked(false);
-		}
+		chooseStorage.setChecked(userInstance.getStorageType(login).equals(NetworkFunctions.StorageType.INTERNAL));
 		autoLogin.setChecked(userInstance.getAutoLogin(login));
 
 		if (intent != null)
@@ -93,6 +87,13 @@ public class SettingsActivity extends AppCompatActivity
 						connectionInstance.addNewServerSettings(serverIp, serverPort);
 
 						connectionInstance.setLastUsed(serverIp, serverPort);
+
+						if (Constants.APIServerIp.isEmpty())
+						{
+							Constants.APIServerIp = serverIp;
+
+							Constants.APIServerPort = serverPort;
+						}
 					}
 				}
 				catch (NumberFormatException ignored)
