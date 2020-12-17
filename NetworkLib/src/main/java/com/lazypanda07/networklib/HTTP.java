@@ -246,7 +246,6 @@ public class HTTP
 
 			builder.insert(HTTPMessage.indexOf("\r\n") + 2, totalHTTPMessageSize);
 
-
 			return builder.toString();
 		}
 
@@ -309,6 +308,8 @@ public class HTTP
 
 				result = method + " " + parameters + " " + HTTPVersion + "\r\n" + headers;
 			}
+
+			result += "\r\n";
 
 			return result;
 		}

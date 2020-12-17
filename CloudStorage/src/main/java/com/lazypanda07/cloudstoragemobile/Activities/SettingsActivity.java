@@ -88,12 +88,9 @@ public class SettingsActivity extends AppCompatActivity
 
 						connectionInstance.setLastUsed(serverIp, serverPort);
 
-						if (Constants.APIServerIp.isEmpty())
-						{
-							Constants.APIServerIp = serverIp;
+						Constants.APIServerIp = serverIp;
 
-							Constants.APIServerPort = serverPort;
-						}
+						Constants.APIServerPort = serverPort;
 					}
 				}
 				catch (NumberFormatException ignored)
